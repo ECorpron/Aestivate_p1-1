@@ -1,2 +1,4 @@
-package com.revature.annotations;public @interface Constraint {
+package com.revature.annotations;
+
+public @interface Constraint {
 }

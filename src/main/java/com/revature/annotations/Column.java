@@ -1,2 +1,4 @@
-package com.revature.annotations;public @interface Column {
+package com.revature.annotations;
+
+public @interface Column {
 }
