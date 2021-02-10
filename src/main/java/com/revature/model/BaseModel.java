@@ -1,2 +1,4 @@
-package com.revature.model;public class BaseModel {
+package com.revature.model;
+
+public class BaseModel {
 }

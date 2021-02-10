@@ -1,4 +1,4 @@
-package com.revature.annotations;
+package com.revature.model;
 
 public class testing {
 }
