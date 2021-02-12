@@ -2,11 +2,10 @@
 <Configuration>
 
     <!-- Database connection info -->
-    <Database>
-        <Name name="postgresql" />
-        <Url url="url"/>
-        <Login login=""/>
-        <Password pass=""/>
+    <Database name = "postgresql">
+        <Url url="jdbc:postgresql://java-enterprise210119.cxutdmhfiik1.us-west-2.rds.amazonaws.com:5432/Project1Demo"/>
+        <Login login="postgres"/>
+        <Password password="9RVI0G1B7DEkbx83vlIY"/>
     </Database>
 
 </Configuration>

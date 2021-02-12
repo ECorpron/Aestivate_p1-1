@@ -18,8 +18,8 @@ public class TableModel<T> {
         this.columns = columns;
     }
 
-    public boolean createTable(Connection conn) {
-
-    }
+//    public boolean createTable(Connection conn) {
+//
+//    }
 
 }
