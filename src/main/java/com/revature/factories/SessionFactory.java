@@ -6,6 +6,7 @@ import java.sql.Connection;
 
 public abstract class SessionFactory {
 
-    abstract SessionFactory getInstance();
-    abstract Connection getConnection(Configuration con);
+    //abstract SessionFactory(Configuration con);
+    //abstract SessionFactory getInstance();
+    //abstract Connection getConnection(Configuration con);
 }

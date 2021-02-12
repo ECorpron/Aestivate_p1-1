@@ -1,6 +1,7 @@
 package com.revature.factories;
 
 import com.revature.util.Configuration;
+import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,7 +12,9 @@ import java.sql.SQLException;
  */
 public class PostgreSQLSessionFactory extends SessionFactory {
 
-    private static SessionFactory connFactory;
+    private BasicDataSource ds = new BasicDataSource();
+    private Configuration config;
+
 
     // For the postgreSQL connection to exist, need the postresql driver
     static {
@@ -22,26 +25,22 @@ public class PostgreSQLSessionFactory extends SessionFactory {
         }
     }
 
-    /**
-     * Static getter for the connection
-     */
-    public SessionFactory getInstance() {
-        if (connFactory == null) {
-            connFactory = new PostgreSQLSessionFactory();
-        }
-        return connFactory;
+    public PostgreSQLSessionFactory(Configuration config) {
+        this.config = config;
+        ds.setUrl(config.getDbUrl());
+        ds.setUsername(config.getDbUsername());
+        ds.setPassword(config.getDbPassword());
+        ds.setMinIdle(config.getMinIdle());
+        ds.setMaxIdle(config.getMaxIdle());
+        ds.setMaxOpenPreparedStatements(config.getMaxOpenPreparedStatements());
     }
 
-    public Connection getConnection(Configuration con) {
-        Connection conn = null;
-
+    public Connection getConnection() {
         try {
-            conn = DriverManager.getConnection(con.getDbUrl(), con.getDbUsername(), con.getDbPassword());
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+            return ds.getConnection();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
-
-        return conn;
+        return null;
     }
 }
