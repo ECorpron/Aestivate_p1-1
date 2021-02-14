@@ -2,6 +2,9 @@ package com.revature.util;
 
 import java.util.Objects;
 
+/**
+ * Stores information about the database necessary for creating a session to said database
+ */
 public class Database {
     private String sqlDatabase;
     private String url;

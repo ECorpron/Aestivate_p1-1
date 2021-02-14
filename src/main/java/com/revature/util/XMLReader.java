@@ -13,6 +13,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Parses the Aestivate.xml file. As of right now, only checks for needed information to set up connections to a
+ * postgresql database
+ */
 public class XMLReader {
 
     private static XMLReader reader = new XMLReader();

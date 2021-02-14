@@ -8,12 +8,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * Connection factory for PostgreSQL
+ * Creates a connection factory for postgresql, ends need to continually make new connections
  */
 public class PostgreSQLSessionFactory extends SessionFactory {
 
     private static BasicDataSource ds = new BasicDataSource();
-
 
     // For the postgreSQL connection to exist, need the postresql driver
     static {
