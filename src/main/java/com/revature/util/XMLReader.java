@@ -7,34 +7,30 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.management.modelmbean.XMLParseException;
-import javax.xml.crypto.Data;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
 
 public class XMLReader {
 
     private static XMLReader reader = new XMLReader();
-    private static Set<Database> databaseSet;
+    private static Database database;
 
     private XMLReader() {
-        databaseSet = new HashSet<>();
+        //databaseSet = new HashSet<>();
 
         File inputFile = new File("src/main/resources/aestivate.xml");
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = null;
-        Document doc = null;
+        DocumentBuilder builder;
+        Document doc;
 
         try {
             builder = dbFactory.newDocumentBuilder();
             doc = builder.parse(inputFile);
             NodeList databaseNodes = doc.getElementsByTagName("Database");
-            XMLReader.parseXML(databaseNodes);
+            database = XMLReader.parseXML(databaseNodes);
         } catch (ParserConfigurationException e) {
             System.out.println("Error in creating the builder");
             e.printStackTrace();
@@ -50,7 +46,7 @@ public class XMLReader {
         }
     }
 
-    private static void parseXML(NodeList databaseNodes) throws XMLParseException {
+    private static Database parseXML(NodeList databaseNodes) throws XMLParseException {
         if (databaseNodes.getLength() == 0) throw new XMLParseException("No Database tags found");
 
         for (int i = 0; i < databaseNodes.getLength(); i++) {
@@ -75,93 +71,31 @@ public class XMLReader {
             Element password = (Element) database.getElementsByTagName("Password").item(0);
             db.setPassword(password.getAttribute("password"));
 
+            // For minidle, maxidle, and max open, need to convert string to int
+            Element minIdle = (Element) database.getElementsByTagName("MinIdle").item(0);
+            db.setMinIdle(Integer.parseInt(minIdle.getAttribute("minIdle")));
+
+            Element maxIdle = (Element) database.getElementsByTagName("MaxIdle").item(0);
+            db.setMaxIdle(Integer.parseInt(maxIdle.getAttribute("maxIdle")));
+
+            Element maxOpen = (Element) database.getElementsByTagName("maxOpenPreparedStatements").item(0);
+            db.setMaxOpenPreparedStatements(Integer.parseInt(maxOpen.getAttribute("maxOpen")));
+
             if (Database.validate(db)) {
                 throw new XMLParseException("Missing one or more elements or attributes from Database configuration" +
                         " in the XML file");
             }
-
-            databaseSet.add(db);
-            System.out.println(db.toString());
+            //System.out.println(db.toString());
+            return db;
         }
+        return null;
     }
 
-    public static Set<Database> getDatabaseSet() {
-        return databaseSet;
+    public static XMLReader getInstance() {
+        return reader;
     }
 
-    public static class Database {
-        String sqlDatabase;
-        String url;
-        String loginName;
-        String password;
-
-        public Database(){
-            this.sqlDatabase = null;
-            this.url = null;
-            this.loginName = null;
-            this.password = null;
-        }
-
-        public static boolean validate(Database database) {
-            return ((database.getSqlDatabase() == null || database.getSqlDatabase().trim().equals("")) ||
-                    (database.getUrl() == null || database.getUrl().trim().equals("")) ||
-                    (database.getLoginName() == null || database.getLoginName().trim().equals("")) ||
-                    (database.getPassword() == null || database.getPassword().equals("")));
-        }
-
-        public String getSqlDatabase() {
-            return sqlDatabase;
-        }
-
-        public String getUrl() {
-            return url;
-        }
-
-        public String getLoginName() {
-            return loginName;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-
-        public void setDatabase(String sqlDatabase) {
-            this.sqlDatabase = sqlDatabase;
-        }
-
-        public void setUrl(String url) {
-            this.url = url;
-        }
-
-        public void setLoginName(String loginName) {
-            this.loginName = loginName;
-        }
-
-        public void setPassword(String password) {
-            this.password = password;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Database database1 = (Database) o;
-            return Objects.equals(sqlDatabase, database1.sqlDatabase) && Objects.equals(url, database1.url) && Objects.equals(loginName, database1.loginName) && Objects.equals(password, database1.password);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(sqlDatabase, url, loginName, password);
-        }
-
-        @Override
-        public String toString() {
-            return "Database{" +
-                    "sqlDatabase='" + sqlDatabase + '\'' +
-                    ", url='" + url + '\'' +
-                    ", loginName='" + loginName + '\'' +
-                    ", password='" + password + '\'' +
-                    '}';
-        }
+    public static Database getDatabaseSet() {
+        return database;
     }
 }

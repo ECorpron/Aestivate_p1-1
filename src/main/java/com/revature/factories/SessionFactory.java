@@ -1,9 +1,5 @@
 package com.revature.factories;
 
-import com.revature.util.Configuration;
-
-import java.sql.Connection;
-
 public abstract class SessionFactory {
 
     //abstract SessionFactory(Configuration con);

@@ -1,10 +1,10 @@
 package com.revature.factories;
 
-import com.revature.util.Configuration;
+import com.revature.util.Database;
+import com.revature.util.XMLReader;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
@@ -12,8 +12,7 @@ import java.sql.SQLException;
  */
 public class PostgreSQLSessionFactory extends SessionFactory {
 
-    private BasicDataSource ds = new BasicDataSource();
-    private Configuration config;
+    private static BasicDataSource ds = new BasicDataSource();
 
 
     // For the postgreSQL connection to exist, need the postresql driver
@@ -25,14 +24,15 @@ public class PostgreSQLSessionFactory extends SessionFactory {
         }
     }
 
-    public PostgreSQLSessionFactory(Configuration config) {
-        this.config = config;
-        ds.setUrl(config.getDbUrl());
-        ds.setUsername(config.getDbUsername());
-        ds.setPassword(config.getDbPassword());
-        ds.setMinIdle(config.getMinIdle());
-        ds.setMaxIdle(config.getMaxIdle());
-        ds.setMaxOpenPreparedStatements(config.getMaxOpenPreparedStatements());
+    public PostgreSQLSessionFactory() {
+        Database sqlDb = XMLReader.getDatabaseSet();
+
+        ds.setUrl(sqlDb.getUrl());
+        ds.setUsername(sqlDb.getLoginName());
+        ds.setPassword(sqlDb.getPassword());
+        ds.setMinIdle(sqlDb.getMinIdle());
+        ds.setMaxIdle(sqlDb.getMaxIdle());
+        ds.setMaxOpenPreparedStatements(sqlDb.getMaxOpenPreparedStatements());
     }
 
     public Connection getConnection() {

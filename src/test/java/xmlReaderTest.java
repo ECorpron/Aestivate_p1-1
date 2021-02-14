@@ -1,3 +1,4 @@
+import com.revature.util.Database;
 import com.revature.util.XMLReader;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -12,10 +13,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
-public class xmlReader {
+public class xmlReaderTest {
 
     public static void main(String[] args) {
-        Set<XMLReader.Database> set = XMLReader.getDatabaseSet();
+        Database database = XMLReader.getDatabaseSet();
+        System.out.println(database.toString());
 
 
        /* try {
