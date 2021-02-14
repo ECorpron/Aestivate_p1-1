@@ -10,7 +10,7 @@ import java.sql.SQLException;
 /**
  * Creates a connection factory for postgresql, ends need to continually make new connections
  */
-public class PostgreSQLSessionFactory extends SessionFactory {
+public class PostgreSQLSessionFactory implements SessionFactory {
 
     private static BasicDataSource ds = new BasicDataSource();
 
@@ -23,23 +23,16 @@ public class PostgreSQLSessionFactory extends SessionFactory {
         }
     }
 
-    public PostgreSQLSessionFactory() {
-        Database sqlDb = XMLReader.getDatabaseSet();
-
-        ds.setUrl(sqlDb.getUrl());
-        ds.setUsername(sqlDb.getLoginName());
-        ds.setPassword(sqlDb.getPassword());
-        ds.setMinIdle(sqlDb.getMinIdle());
-        ds.setMaxIdle(sqlDb.getMaxIdle());
-        ds.setMaxOpenPreparedStatements(sqlDb.getMaxOpenPreparedStatements());
+    public PostgreSQLSessionFactory(Database db) {
+        ds.setUrl(db.getUrl());
+        ds.setUsername(db.getLoginName());
+        ds.setPassword(db.getPassword());
+        ds.setMinIdle(db.getMinIdle());
+        ds.setMaxIdle(db.getMaxIdle());
+        ds.setMaxOpenPreparedStatements(db.getMaxOpenPreparedStatements());
     }
 
-    public Connection getConnection() {
-        try {
-            return ds.getConnection();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        return null;
+    public Connection getConnection() throws SQLException {
+        return ds.getConnection();
     }
 }
