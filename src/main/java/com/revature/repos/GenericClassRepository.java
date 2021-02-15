@@ -9,6 +9,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * A repository that can run CRUD methods for any class that extends the BaseModel.
+ * @param <T> The class that is using the Repository
+ */
 public class GenericClassRepository<T> implements CrudRepository<T> {
 
     Class<T> tClass;
@@ -21,6 +25,10 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
         classTableName = replacePeriods(new StringBuilder(tClass.getName())).toString();
     }
 
+    /**
+     * Creates the class table. Returns true if the table is successfully made, or false if the table already exists.
+     * @return true if the table is made, false if the table already exists
+     */
     @Override
     public boolean createClassTable() {
 
@@ -34,6 +42,7 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
         ColumnField[] columns = null;
 
         try {
+            assert field != null;
             columns = (ColumnField[]) field.get(null);
         } catch (IllegalAccessException e) {
             System.out.println("Illegal Access exception to the columns field in the class");
@@ -49,15 +58,13 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
         }
 
         builder.deleteCharAt(builder.lastIndexOf(","));
-
         builder.append(");");
-        //System.out.println(builder.toString());
 
         Connection conn = SessionManager.getConnection();
-        PreparedStatement pstmt = null;
-        try {
-            pstmt = conn.prepareStatement(builder.toString());
 
+        try {
+            assert conn != null;
+            PreparedStatement pstmt = conn.prepareStatement(builder.toString());
             pstmt.execute();
         } catch (SQLException throwables) {
             System.out.println("Class already exists!");
@@ -72,10 +79,10 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
         Connection conn = SessionManager.getConnection();
 
         try {
+            assert conn != null;
             PreparedStatement pstmt = conn.prepareStatement(select);
             pstmt.setString(1, "*");
             pstmt.setString(2, classTableName);
-            //System.out.println(pstmt.toString());
 
             return pstmt.executeQuery();
         } catch (SQLException throwables) {
@@ -84,15 +91,18 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
         return null;
     }
 
+    /**
+     * A method that always drops the class table, whether or not it exists.
+     */
     public void dropClassTableAlways(){
         Connection conn = SessionManager.getConnection();
 
         String sql = "DROP TABLE IF EXISTS "+classTableName;
         System.out.println(sql);
 
-        PreparedStatement pstmt = null;
         try {
-            pstmt = conn.prepareStatement(sql);
+            assert conn != null;
+            PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.execute();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
