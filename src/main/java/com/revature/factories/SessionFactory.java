@@ -1,5 +1,7 @@
 package com.revature.factories;
 
+import com.revature.util.Database;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -10,6 +12,6 @@ import java.sql.SQLException;
 public interface SessionFactory {
 
     //abstract SessionFactory(Configuration con);
-    //abstract SessionFactory getInstance();
-     public Connection getConnection() throws SQLException;
+    public Connection getConnection() throws SQLException;
+    public String getDatabaseName();
 }

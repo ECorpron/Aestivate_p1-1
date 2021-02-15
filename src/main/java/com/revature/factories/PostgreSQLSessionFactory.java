@@ -13,6 +13,7 @@ import java.sql.SQLException;
 public class PostgreSQLSessionFactory implements SessionFactory {
 
     private static BasicDataSource ds = new BasicDataSource();
+    private final String databaseName = "postgresql";
 
     // For the postgreSQL connection to exist, need the postresql driver
     static {
@@ -34,5 +35,10 @@ public class PostgreSQLSessionFactory implements SessionFactory {
 
     public Connection getConnection() throws SQLException {
         return ds.getConnection();
+    }
+
+    @Override
+    public String getDatabaseName() {
+        return databaseName;
     }
 }

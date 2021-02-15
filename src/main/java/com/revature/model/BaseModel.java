@@ -1,25 +1,46 @@
 package com.revature.model;
 
-import com.revature.annotations.Column;
+import com.revature.repos.GenericClassRepository;
+import com.revature.services.ClassService;
 import com.revature.util.ColumnField;
 
-import java.util.List;
+import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.SQLDataException;
+import java.sql.SQLException;
+import java.util.Map;
 
 /**
- * Annotation base class
- * @param <T>
+ * Inheritance based model for an ORM
+ * @param <T> the type of the class
  */
-public class BaseModel<T> {
+public abstract class BaseModel<T> {
 
-    private Class<T> tClass;
+    public final static ColumnField[] columns = setColumns();
+    private ClassService<T> service;
 
-    public static <T> BaseModel<T> of(Class<T> tClass) {
-        return new BaseModel<>(tClass);
+    public BaseModel() {
+        Class<T> tClass = (Class<T>) this.getClass();
+        service = new ClassService<T>(new GenericClassRepository<T>(), tClass);
     }
 
-    public BaseModel(Class<T> tClass) {
-        this.tClass = tClass;
+    private static ColumnField[] setColumns() {
+        return null;
     }
 
-    //public List<ColumnField>
+    /**
+     * Returns true if the table is created, false if the table already exists.
+     */
+    public void createTableIfNonexistant() throws SQLException, NoSuchFieldException {
+        service.createTableIfDoesNotExist();
+    }
+
+    public void createTable() throws SQLException, NoSuchFieldException {
+        service.dropThenCreateTable();
+    }
+
+//    public boolean createTable(Connection conn) {
+//
+//    }
+
 }

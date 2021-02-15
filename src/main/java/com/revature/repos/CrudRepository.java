@@ -1,5 +1,11 @@
 package com.revature.repos;
 
+import com.revature.model.SQLConstraints;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Map;
+
 /**
  * Interface for implementing a CrudRepository. Requires classes that implement it to implement a number of methods that
  * handle accessing the database.
@@ -9,9 +15,11 @@ public interface CrudRepository<T> {
 
     /**
      * Creates a table of the specified object
-     * @param newObj the object to have a table created of
+     * @param tClass the class to tableify
      */
-    void createTable(T newObj);
+    void createTable(Class<T> tClass) throws NoSuchFieldException, SQLException;
+
+    ResultSet getAll(String tableName) throws SQLException;
 
     /**
      * A save method that saves a given object to the database.
