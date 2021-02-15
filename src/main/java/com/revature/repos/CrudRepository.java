@@ -15,11 +15,10 @@ public interface CrudRepository<T> {
 
     /**
      * Creates a table of the specified object
-     * @param tClass the class to tableify
      */
-    void createTable(Class<T> tClass) throws NoSuchFieldException, SQLException;
+    boolean createClassTable() throws NoSuchFieldException, SQLException;
 
-    ResultSet getAll(String tableName) throws SQLException;
+    ResultSet getAll() throws SQLException;
 
     /**
      * A save method that saves a given object to the database.

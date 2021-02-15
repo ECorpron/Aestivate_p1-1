@@ -16,27 +16,27 @@ import java.util.Map;
  */
 public abstract class BaseModel<T> {
 
-    public final static ColumnField[] columns = setColumns();
+    public static ColumnField[] columns;
     private ClassService<T> service;
 
+    @SuppressWarnings("unchecked")
     public BaseModel() {
         Class<T> tClass = (Class<T>) this.getClass();
-        service = new ClassService<T>(new GenericClassRepository<T>(), tClass);
+        service = new ClassService<T>(new GenericClassRepository<T>(tClass), tClass);
+        columns = setColumns();
     }
 
-    private static ColumnField[] setColumns() {
-        return null;
-    }
+    protected abstract ColumnField[] setColumns();
 
     /**
      * Returns true if the table is created, false if the table already exists.
      */
     public void createTableIfNonexistant() throws SQLException, NoSuchFieldException {
-        service.createTableIfDoesNotExist();
+        service.createClassTableIfDoesNotExist();
     }
 
     public void createTable() throws SQLException, NoSuchFieldException {
-        service.dropThenCreateTable();
+        service.dropThenCreateClassTable();
     }
 
 //    public boolean createTable(Connection conn) {

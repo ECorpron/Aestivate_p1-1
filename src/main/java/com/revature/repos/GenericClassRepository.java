@@ -1,6 +1,5 @@
 package com.revature.repos;
 
-import com.revature.model.SQLConstraints;
 import com.revature.util.ColumnField;
 import com.revature.util.SessionManager;
 
@@ -9,24 +8,29 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class GenericClassRepository<T> implements CrudRepository<T> {
 
+    Class<T> tClass;
+    String classTableName;
     String select = "SELECT ? "+
                     "FROM ?";
 
-    String drop = "DROP TABLE ?";
-
-    //String makeTable = "CREATE TABLE "++"" (\n";
-
-
+    public GenericClassRepository(Class<T> tClass) {
+        this.tClass = tClass;
+        classTableName = replacePeriods(new StringBuilder(tClass.getName())).toString();
+    }
 
     @Override
-    public void createTable(Class<T> tClass) throws NoSuchFieldException, SQLException {
+    public boolean createClassTable() {
 
-        Field field = tClass.getField("columns");
+        Field field = null;
+        try {
+            field = tClass.getField("columns");
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+
         ColumnField[] columns = null;
 
         try {
@@ -36,15 +40,7 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
             e.printStackTrace();
         }
 
-        StringBuilder builder = new StringBuilder("CREATE TABLE "+tClass.getName()+" (\n");
-
-        int index = builder.indexOf(".");
-
-        while(index != -1) {
-            builder.replace(index, index+1, "_");
-            index = builder.indexOf(".");
-        }
-
+        StringBuilder builder = new StringBuilder("CREATE TABLE "+classTableName+" (\n");
 
         assert columns != null;
         for (ColumnField column : columns) {
@@ -55,39 +51,52 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
         builder.deleteCharAt(builder.lastIndexOf(","));
 
         builder.append(");");
-        System.out.println(builder.toString());
+        //System.out.println(builder.toString());
 
         Connection conn = SessionManager.getConnection();
-        //System.out.println(conn.isClosed());
-        PreparedStatement pstmt = conn.prepareStatement(builder.toString());
-        //pstmt.setString(1, tClass.getName());
+        PreparedStatement pstmt = null;
+        try {
+            pstmt = conn.prepareStatement(builder.toString());
 
-        pstmt.execute();
+            pstmt.execute();
+        } catch (SQLException throwables) {
+            System.out.println("Class already exists!");
+            return false;
+        }
+
+        return true;
     }
 
     @Override
-    public ResultSet getAll(String tableName) throws SQLException {
-
-        StringBuilder builder = new StringBuilder(tableName);
-
+    public ResultSet getAll() {
         Connection conn = SessionManager.getConnection();
 
-        PreparedStatement pstmt = conn.prepareStatement(select);
-        pstmt.setString(1, "*");
-        pstmt.setString(2, tableName);
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(select);
+            pstmt.setString(1, "*");
+            pstmt.setString(2, classTableName);
+            //System.out.println(pstmt.toString());
 
-        return pstmt.executeQuery();
+            return pstmt.executeQuery();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return null;
     }
 
-    public void dropTable(String tableName) throws SQLException {
-
-        StringBuilder builder = new StringBuilder(tableName);
-        builder = replacePeriods(builder);
-
+    public void dropClassTableAlways(){
         Connection conn = SessionManager.getConnection();
 
-        PreparedStatement pstmt = conn.prepareStatement(drop);
-        pstmt.setString(1, builder.toString());
+        String sql = "DROP TABLE IF EXISTS "+classTableName;
+        System.out.println(sql);
+
+        PreparedStatement pstmt = null;
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.execute();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
     }
 
     @Override

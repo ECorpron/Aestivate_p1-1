@@ -7,7 +7,7 @@ public class TestClassTest {
     public static void main(String[] args) {
         TestClass test = new TestClass();
         try {
-            test.createTable();
+            test.createTableIfNonexistant();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } catch (NoSuchFieldException e) {

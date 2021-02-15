@@ -8,9 +8,8 @@ import java.util.Map;
 
 public class TestClass extends BaseModel<TestClass> {
 
-    public final static ColumnField[] columns = setColumns();
 
-    private static ColumnField[] setColumns() {
+    protected ColumnField[] setColumns() {
         ColumnField[] columns = new ColumnField[2];
         ColumnField column1 = new ColumnField("id", "serial", SQLConstraints.PRIMARY_KEY);
         ColumnField column2 = new ColumnField("name", "varchar", SQLConstraints.NOT_NULL);

@@ -1,11 +1,6 @@
 package com.revature.services;
 
-import com.revature.model.SQLConstraints;
 import com.revature.repos.GenericClassRepository;
-
-import java.sql.SQLDataException;
-import java.sql.SQLException;
-import java.util.Map;
 
 public class ClassService<T> {
 
@@ -17,30 +12,13 @@ public class ClassService<T> {
         this.tClass = tClass;
     }
 
-    public boolean createTableIfDoesNotExist() throws SQLException, NoSuchFieldException {
-        if (doesTableExist()) return false;
-
-        repo.createTable(tClass);
-        return true;
+    public boolean createClassTableIfDoesNotExist(){
+        return repo.createClassTable();
     }
 
-    public boolean dropThenCreateTable() throws SQLException, NoSuchFieldException {
-        if (doesTableExist()) repo.dropTable(tClass.getName());
+    public void dropThenCreateClassTable(){
+        repo.dropClassTableAlways();
 
-        repo.createTable(tClass);
-        return true;
-    }
-
-    public boolean doesTableExist() {
-        String tableName = tClass.getName();
-        boolean exists = true;
-
-        try {
-            repo.getAll(tableName);
-        } catch (SQLException throwables) {
-            exists = false;
-        }
-
-        return exists;
+        repo.createClassTable();
     }
 }
