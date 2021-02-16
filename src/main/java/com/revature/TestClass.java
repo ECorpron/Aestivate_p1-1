@@ -8,6 +8,9 @@ import java.util.Map;
 
 public class TestClass extends BaseModel<TestClass> {
 
+    private int id;
+    private String name;
+
 
     protected ColumnField[] setColumns() {
         ColumnField[] columns = new ColumnField[2];

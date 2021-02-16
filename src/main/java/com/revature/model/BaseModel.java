@@ -4,11 +4,7 @@ import com.revature.repos.GenericClassRepository;
 import com.revature.services.ClassService;
 import com.revature.util.ColumnField;
 
-import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.SQLDataException;
 import java.sql.SQLException;
-import java.util.Map;
 
 /**
  * Inheritance based model for an ORM
@@ -18,29 +14,34 @@ public abstract class BaseModel<T> {
 
     public static ColumnField[] columns;
     private ClassService<T> service;
+    private BaseModel<T> selfReference;
 
     @SuppressWarnings("unchecked")
     public BaseModel() {
         Class<T> tClass = (Class<T>) this.getClass();
         service = new ClassService<T>(new GenericClassRepository<T>(tClass), tClass);
         columns = setColumns();
+        selfReference = this;
     }
 
     protected abstract ColumnField[] setColumns();
 
     /**
-     * Returns true if the table is created, false if the table already exists.
+     * Creates a table of the class only if the table doesn't already exists.
      */
     public void createTableIfNonexistant() throws SQLException, NoSuchFieldException {
         service.createClassTableIfDoesNotExist();
     }
 
-    public void createTable() throws SQLException, NoSuchFieldException {
+    /**
+     * Always creates a table with the class table name, dropping one with the same name if it exists.
+     */
+    public void createTable(){
         service.dropThenCreateClassTable();
     }
 
-//    public boolean createTable(Connection conn) {
-//
-//    }
+    public void save() {
+        service.save(selfReference);
+    }
 
 }

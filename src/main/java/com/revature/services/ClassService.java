@@ -1,5 +1,6 @@
 package com.revature.services;
 
+import com.revature.model.BaseModel;
 import com.revature.repos.GenericClassRepository;
 
 public class ClassService<T> {
@@ -18,7 +19,10 @@ public class ClassService<T> {
 
     public void dropThenCreateClassTable(){
         repo.dropClassTableAlways();
-
         repo.createClassTable();
+    }
+
+    public void save(BaseModel<T> save) {
+
     }
 }

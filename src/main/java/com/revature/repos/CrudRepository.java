@@ -1,5 +1,6 @@
 package com.revature.repos;
 
+import com.revature.model.BaseModel;
 import com.revature.model.SQLConstraints;
 
 import java.sql.ResultSet;
@@ -24,7 +25,7 @@ public interface CrudRepository<T> {
      * A save method that saves a given object to the database.
      * @param newObj the object to be saved
      */
-    void save(T newObj);
+    void save(BaseModel<T> newObj);
 
     /**
      * A findAll methods that returns a LinkedList of all items in the database
@@ -44,7 +45,7 @@ public interface CrudRepository<T> {
      * @param updatedObj The updated object
      * @return returns true if changed, else returns false
      */
-    boolean update(T updatedObj);
+    boolean update(BaseModel<T> updatedObj);
 
     /**
      * Deletes an entry from the database based on the id

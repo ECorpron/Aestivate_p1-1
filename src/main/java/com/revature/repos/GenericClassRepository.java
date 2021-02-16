@@ -1,5 +1,6 @@
 package com.revature.repos;
 
+import com.revature.model.BaseModel;
 import com.revature.util.ColumnField;
 import com.revature.util.SessionManager;
 
@@ -110,7 +111,7 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
     }
 
     @Override
-    public void save(T newObj) {
+    public void save(BaseModel<T> newObj) {
 
     }
 
@@ -120,7 +121,7 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
     }
 
     @Override
-    public boolean update(T updatedObj) {
+    public boolean update(BaseModel<T> updatedObj) {
         return false;
     }
 
