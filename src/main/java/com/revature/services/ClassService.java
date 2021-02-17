@@ -23,6 +23,6 @@ public class ClassService<T> {
     }
 
     public void save(BaseModel<T> save) {
-
+        repo.saveNewToClassTable(save);
     }
 }

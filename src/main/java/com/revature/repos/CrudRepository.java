@@ -25,7 +25,7 @@ public interface CrudRepository<T> {
      * A save method that saves a given object to the database.
      * @param newObj the object to be saved
      */
-    void save(BaseModel<T> newObj);
+    void saveNewToClassTable(BaseModel<T> newObj);
 
     /**
      * A findAll methods that returns a LinkedList of all items in the database
@@ -35,10 +35,10 @@ public interface CrudRepository<T> {
 
     /**
      * Finds an entry by its id
-     * @param id the id to search an entry for
+     * @param primaryKey the key to search an entry for
      * @return returns the object with the corresponding id
      */
-    T findById(int id);
+    T findByPrimaryKey(Object primaryKey);
 
     /**
      * Updates the given object in the database.

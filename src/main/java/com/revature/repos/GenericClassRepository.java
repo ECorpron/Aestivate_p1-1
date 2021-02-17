@@ -5,6 +5,7 @@ import com.revature.util.ColumnField;
 import com.revature.util.SessionManager;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -111,13 +112,75 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
     }
 
     @Override
-    public void save(BaseModel<T> newObj) {
+    public void saveNewToClassTable(BaseModel<T> newObj) {
+        String sql = getInsertString();
 
+        try {
+            Field field = tClass.getField("columns");
+            ColumnField[] columns = (ColumnField[]) field.get(null);
+
+            Connection conn = SessionManager.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+
+            int count = 1;
+
+            for (ColumnField column : columns) {
+                String fieldName = column.getColumnName();
+                System.out.println(fieldName);
+
+                Field fieldToStore = newObj.getClass().getDeclaredField(fieldName);
+
+                if (Modifier.isPrivate(fieldToStore.getModifiers())) {
+                    fieldToStore.setAccessible(true);
+                }
+
+                pstmt.setObject(count, fieldToStore.get(newObj));
+                count++;
+            }
+
+            pstmt.execute();
+
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+            System.out.println("Missing a field");
+        } catch (SQLException e) {
+            System.out.println("Class is already saved");
+        }
+    }
+
+    private String getInsertString() {
+        StringBuilder builder = new StringBuilder("INSERT INTO "+classTableName+"\n VALUES (");
+
+        try {
+            Field field = tClass.getField("columns");
+            ColumnField[] columns = (ColumnField[]) field.get(null);
+
+            for (ColumnField column : columns) {
+                builder.append("?, ");
+            }
+
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+        int index = builder.lastIndexOf(", ");
+        builder.delete(index, index+2);
+        builder.append(")");
+        return builder.toString();
     }
 
     @Override
-    public T findById(int id) {
-        return null;
+    public T findByPrimaryKey(Object primaryKey) {
+        Field[] fields = tClass.getFields();
+        for
+    }
+
+    private Field getPkField() {
+        Field[] fields = tClass.getFields();
+
+        for (Field field: fields) {
+
+        }
     }
 
     @Override
@@ -129,6 +192,7 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
     public boolean deleteById(int id) {
         return false;
     }
+
 
     private StringBuilder replacePeriods(StringBuilder builder) {
         int index = builder.indexOf(".");

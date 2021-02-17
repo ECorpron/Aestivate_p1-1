@@ -11,6 +11,11 @@ public class TestClass extends BaseModel<TestClass> {
     private int id;
     private String name;
 
+    public TestClass(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
 
     protected ColumnField[] setColumns() {
         ColumnField[] columns = new ColumnField[2];
