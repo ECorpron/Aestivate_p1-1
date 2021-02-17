@@ -43,11 +43,11 @@ public class ClassService<T> {
 
         try {
             if (repo.findByPrimaryKey(pk) == null) {
-                //System.out.println("The entry does not already exist, creating a new one.");
+                System.out.println("The entry does not already exist, creating a new one.");
                 repo.saveNewToClassTable(save);
             } else {
-                //System.out.println("Entry exists, updating it");
-                // need to add update method
+                System.out.println("Entry exists, updating it");
+                repo.updateByPrimaryKey(save);
             }
         } catch (SQLSyntaxErrorException throwables) {
             throwables.printStackTrace();

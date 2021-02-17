@@ -8,5 +8,8 @@ public class TestClassTest {
         TestClass test = new TestClass(1, "Eli");
         //test.createTableIfNonexistant();
         test.save();
+
+        test.setName("Corpron");
+        test.save();
     }
 }

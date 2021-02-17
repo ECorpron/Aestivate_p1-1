@@ -171,7 +171,16 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
         Connection conn = SessionManager.getConnection();
         try {
             String sql = getUpdateString();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+
+            pstmt = getPreparedUpdate(pstmt, updatedObj);
+            pstmt.execute();
+
+            return true;
+
         } catch (SQLSyntaxErrorException throwables) {
+            throwables.printStackTrace();
+        } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
 
@@ -179,8 +188,8 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
     }
 
     private String getUpdateString() throws SQLSyntaxErrorException {
-        StringBuilder builder = new StringBuilder("Update "+classTableName+"\nSET ");
-        StringBuilder end = new StringBuilder("WHERE ");
+        StringBuilder builder = new StringBuilder("Update "+classTableName+" SET ");
+        StringBuilder qualifier = new StringBuilder("WHERE ");
 
         ColumnField[] columns = getColumns();
 
@@ -189,11 +198,51 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
             String columnName = column.getColumnName();
             if (!isColumnNameSafe(columnName)) throw new SQLSyntaxErrorException("Column name contains invalid characters!");
 
-//            if (column.getColumnType() == SQLConstraints.PRIMARY_KEY) {
-//
-//            }
+            if (column.getConstraint() == SQLConstraints.PRIMARY_KEY) {
+                qualifier.append(columnName).append(" = ?");
+            } else {
+                builder.append(columnName).append(" = ?, ");
+            }
         }
-        return null;
+
+        int index = builder.lastIndexOf(", ");
+        builder.delete(index, index+2);
+        builder.append(qualifier);
+
+        return builder.toString();
+    }
+
+    private PreparedStatement getPreparedUpdate(PreparedStatement pstmt, T updatedObject) throws SQLException {
+        ColumnField[] columns = getColumns();
+
+        int count = 1;
+
+        for (ColumnField column: columns) {
+
+            Object insert = null;
+
+            try {
+                Field fieldToInsert = tClass.getDeclaredField(column.getColumnName());
+
+                if (Modifier.isPrivate(fieldToInsert.getModifiers())) {
+                    fieldToInsert.setAccessible(true);
+                }
+
+                insert = fieldToInsert.get(updatedObject);
+
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
+            if (column.getConstraint() == SQLConstraints.PRIMARY_KEY) {
+                pstmt.setObject(columns.length, insert);
+            } else {
+                pstmt.setObject(count, insert);
+                count++;
+            }
+        }
+
+        return pstmt;
     }
 
     private String getInsertString() {

@@ -29,4 +29,22 @@ public class TestClass extends BaseModel<TestClass> {
         columns[1] = column2;
         return columns;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public TestClass setId(int id) {
+        this.id = id;
+        return this;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public TestClass setName(String name) {
+        this.name = name;
+        return this;
+    }
 }
