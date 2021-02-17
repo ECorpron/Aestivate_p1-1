@@ -5,6 +5,7 @@ import com.revature.model.SQLConstraints;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLSyntaxErrorException;
 import java.util.Map;
 
 /**
@@ -25,7 +26,7 @@ public interface CrudRepository<T> {
      * A save method that saves a given object to the database.
      * @param newObj the object to be saved
      */
-    void saveNewToClassTable(BaseModel<T> newObj);
+    void saveNewToClassTable(T newObj);
 
     /**
      * A findAll methods that returns a LinkedList of all items in the database
@@ -38,14 +39,14 @@ public interface CrudRepository<T> {
      * @param primaryKey the key to search an entry for
      * @return returns the object with the corresponding id
      */
-    T findByPrimaryKey(Object primaryKey);
+    T findByPrimaryKey(Object primaryKey) throws NoSuchFieldException, SQLSyntaxErrorException;
 
     /**
      * Updates the given object in the database.
      * @param updatedObj The updated object
      * @return returns true if changed, else returns false
      */
-    boolean update(BaseModel<T> updatedObj);
+    boolean updateByPrimaryKey(T updatedObj);
 
     /**
      * Deletes an entry from the database based on the id

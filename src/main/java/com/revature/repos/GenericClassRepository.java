@@ -1,15 +1,19 @@
 package com.revature.repos;
 
 import com.revature.model.BaseModel;
+import com.revature.model.SQLConstraints;
 import com.revature.util.ColumnField;
 import com.revature.util.SessionManager;
+import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A repository that can run CRUD methods for any class that extends the BaseModel.
@@ -112,7 +116,7 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
     }
 
     @Override
-    public void saveNewToClassTable(BaseModel<T> newObj) {
+    public void saveNewToClassTable(T newObj) {
         String sql = getInsertString();
 
         try {
@@ -126,7 +130,6 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
 
             for (ColumnField column : columns) {
                 String fieldName = column.getColumnName();
-                System.out.println(fieldName);
 
                 Field fieldToStore = newObj.getClass().getDeclaredField(fieldName);
 
@@ -146,6 +149,51 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
         } catch (SQLException e) {
             System.out.println("Class is already saved");
         }
+    }
+
+    @Override
+    public boolean updateByPrimaryKey(T updatedObj) {
+        try {
+            Field pk = getPkField();
+
+            if (Modifier.isPrivate(pk.getModifiers())) {
+                pk.setAccessible(true);
+            }
+
+            Object identifier = pk.get(updatedObj);
+
+            if (findByPrimaryKey(identifier) == null) return false;
+
+        } catch (NoSuchFieldException | IllegalAccessException | SQLSyntaxErrorException e) {
+            e.printStackTrace();
+        }
+
+        Connection conn = SessionManager.getConnection();
+        try {
+            String sql = getUpdateString();
+        } catch (SQLSyntaxErrorException throwables) {
+            throwables.printStackTrace();
+        }
+
+        return false;
+    }
+
+    private String getUpdateString() throws SQLSyntaxErrorException {
+        StringBuilder builder = new StringBuilder("Update "+classTableName+"\nSET ");
+        StringBuilder end = new StringBuilder("WHERE ");
+
+        ColumnField[] columns = getColumns();
+
+        for (ColumnField column: columns){
+
+            String columnName = column.getColumnName();
+            if (!isColumnNameSafe(columnName)) throw new SQLSyntaxErrorException("Column name contains invalid characters!");
+
+//            if (column.getColumnType() == SQLConstraints.PRIMARY_KEY) {
+//
+//            }
+        }
+        return null;
     }
 
     private String getInsertString() {
@@ -170,22 +218,42 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
     }
 
     @Override
-    public T findByPrimaryKey(Object primaryKey) {
-        Field[] fields = tClass.getFields();
-        for
-    }
-
-    private Field getPkField() {
-        Field[] fields = tClass.getFields();
-
-        for (Field field: fields) {
-
+    public T findByPrimaryKey(Object primaryKey) throws SQLSyntaxErrorException {
+        Field pk = null;
+        try {
+            pk = getPkField();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
         }
-    }
 
-    @Override
-    public boolean update(BaseModel<T> updatedObj) {
-        return false;
+        if (!isColumnNameSafe(pk.getName())) throw new SQLSyntaxErrorException("Name contains invalid characters");
+
+        String sql = "SELECT * FROM "+classTableName+" WHERE "+pk.getName()+" = ?";
+
+        Connection conn = SessionManager.getConnection();
+
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setObject(1, primaryKey);
+
+            //System.out.println(pstmt.toString());
+            ResultSet rs = pstmt.executeQuery();
+
+
+
+            ArrayList<T> objects =  getTObjects(rs);
+
+            if (objects.size() > 0) {
+                return objects.get(0);
+            } else {
+                return null;
+            }
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        return null;
     }
 
     @Override
@@ -193,6 +261,99 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
         return false;
     }
 
+    /**
+     * A convenience method that returns the primary key field of tClass
+     * @return the field of the primary key
+     * @throws NoSuchFieldException if there isn't a column labelled as a primary key
+     */
+    public Field getPkField() throws NoSuchFieldException {
+        ColumnField[] columns = getColumns();
+
+        for (ColumnField column : columns) {
+            if (column.getConstraint().equals(SQLConstraints.PRIMARY_KEY)) {
+                try {
+                    return tClass.getDeclaredField(column.getColumnName());
+                } catch (NoSuchFieldException e) {
+                    System.out.println("Can't find primary key in column");
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+        }
+        throw new NoSuchFieldException("This class does not have a Primary Key Constraint");
+    }
+
+    private ArrayList<T> getTObjects(ResultSet rs) throws SQLException {
+        ColumnField[] columns = getColumns();
+
+        ArrayList<T> objects = new ArrayList<>();
+
+        while (rs.next()) {
+            T t = null;
+
+            try {
+                try {
+                    t = tClass.newInstance();
+                } catch (InstantiationException e) {
+                    e.printStackTrace();
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
+            for (int i = 1; i <= columns.length; i++) {
+                //System.out.println("On iteration: "+i);
+                Field field = null;
+                String columnName = null;
+
+                try {
+                    columnName = columns[i-1].getColumnName();
+
+                    field = tClass.getDeclaredField(columnName);
+                    //System.out.println("On field: "+columnName);
+                } catch (NoSuchFieldException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+
+                if (Modifier.isPrivate(field.getModifiers())) {
+                    field.setAccessible(true);
+                }
+
+                try {
+                    field.set(t, rs.getObject(columnName));
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            objects.add(t);
+        }
+
+        return objects;
+    }
+
+    private boolean isColumnNameSafe(String name) {
+
+        Pattern pattern = Pattern.compile("^[a-zA-Z0-9_]+$");
+        Matcher matcher = pattern.matcher(name);
+        return matcher.matches();
+    }
+
+    private ColumnField[] getColumns(){
+        try {
+            Field dbColumns = tClass.getField("columns");
+            return (ColumnField[]) dbColumns.get(null);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        try {
+            throw new NoSuchFieldException("Missing a column field");
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     private StringBuilder replacePeriods(StringBuilder builder) {
         int index = builder.indexOf(".");

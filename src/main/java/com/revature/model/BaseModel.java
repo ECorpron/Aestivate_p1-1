@@ -14,14 +14,14 @@ public abstract class BaseModel<T> {
 
     public static ColumnField[] columns;
     private ClassService<T> service;
-    private BaseModel<T> selfReference;
+    //private T selfReference;
 
     @SuppressWarnings("unchecked")
     public BaseModel() {
         Class<T> tClass = (Class<T>) this.getClass();
         service = new ClassService<T>(new GenericClassRepository<T>(tClass), tClass);
         columns = setColumns();
-        selfReference = this;
+        //selfReference = this;
     }
 
     protected abstract ColumnField[] setColumns();
@@ -40,8 +40,12 @@ public abstract class BaseModel<T> {
         service.dropThenCreateClassTable();
     }
 
+    /**
+     * Creates a new row in the database if the object doesn't exist yet, or updates an already existing row if an
+     * entry with the same primary key already exists.
+     */
     public void save() {
-        service.save(selfReference);
+        service.save((T) this);
     }
 
 }
