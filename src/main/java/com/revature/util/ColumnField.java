@@ -2,6 +2,7 @@ package com.revature.util;
 
 import com.revature.model.SQLConstraints;
 
+import java.lang.reflect.Field;
 import java.util.Objects;
 
 public class ColumnField {

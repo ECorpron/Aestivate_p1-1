@@ -1,17 +1,13 @@
 package com.revature.repos;
 
-import com.revature.model.BaseModel;
 import com.revature.model.SQLConstraints;
 import com.revature.util.ColumnField;
 import com.revature.util.SessionManager;
-import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -68,21 +64,32 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
 
         Connection conn = SessionManager.getConnection();
 
+        boolean created;
+
         try {
             assert conn != null;
             PreparedStatement pstmt = conn.prepareStatement(builder.toString());
             pstmt.execute();
         } catch (SQLException throwables) {
             System.out.println("Class already exists!");
-            return false;
+            created = false;
         }
 
-        return true;
+        created =  true;
+
+        try {
+            conn.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        return created;
     }
 
     @Override
     public ResultSet getAll() {
         Connection conn = SessionManager.getConnection();
+        ResultSet table = null;
 
         try {
             assert conn != null;
@@ -90,11 +97,18 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
             pstmt.setString(1, "*");
             pstmt.setString(2, classTableName);
 
-            return pstmt.executeQuery();
+            table = pstmt.executeQuery();
+
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-        return null;
+
+        try {
+            conn.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return table;
     }
 
     /**
@@ -104,12 +118,15 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
         Connection conn = SessionManager.getConnection();
 
         String sql = "DROP TABLE IF EXISTS "+classTableName;
-        System.out.println(sql);
+        //System.out.println(sql);
 
         try {
             assert conn != null;
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.execute();
+
+            conn.close();
+
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -142,6 +159,8 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
             }
 
             pstmt.execute();
+
+            conn.close();
 
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
@@ -176,10 +195,18 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
             pstmt = getPreparedUpdate(pstmt, updatedObj);
             pstmt.execute();
 
+            conn.close();
+
             return true;
 
         } catch (SQLSyntaxErrorException throwables) {
             throwables.printStackTrace();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        try {
+            conn.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -292,6 +319,8 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
 
             ArrayList<T> objects =  getTObjects(rs);
 
+            conn.close();
+
             if (objects.size() > 0) {
                 return objects.get(0);
             } else {
@@ -302,11 +331,49 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
             throwables.printStackTrace();
         }
 
+        try {
+            conn.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
         return null;
     }
 
     @Override
-    public boolean deleteById(int id) {
+    public boolean deleteByPrimaryKey(Object primaryKey) throws SQLSyntaxErrorException {
+        Field pk = null;
+        try {
+            pk = getPkField();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+
+        if (!isColumnNameSafe(pk.getName())) throw new SQLSyntaxErrorException("Name contains invalid characters");
+        String sql = "DELETE FROM "+classTableName+" WHERE "+pk.getName()+" = ?";
+
+        Connection conn = SessionManager.getConnection();
+
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setObject(1, primaryKey);
+
+            boolean executed = pstmt.execute();
+
+            conn.close();
+
+            return executed;
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        try {
+            conn.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
         return false;
     }
 

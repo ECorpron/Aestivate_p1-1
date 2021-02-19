@@ -48,4 +48,8 @@ public abstract class BaseModel<T> {
         service.save((T) this);
     }
 
+    public boolean delete() {
+        return service.delete((T) this);
+    }
+
 }

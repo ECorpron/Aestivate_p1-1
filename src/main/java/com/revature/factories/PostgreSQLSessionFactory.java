@@ -15,7 +15,7 @@ public class PostgreSQLSessionFactory implements SessionFactory {
     private static BasicDataSource ds = new BasicDataSource();
     private final String databaseName = "postgresql";
 
-    // For the postgreSQL connection to exist, need the postresql driver
+    // For the postgreSQL connection to exist, need the postgresql driver
     static {
         try {
             Class.forName("org.postgresql.Driver");

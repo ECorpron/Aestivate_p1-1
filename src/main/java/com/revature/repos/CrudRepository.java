@@ -53,6 +53,6 @@ public interface CrudRepository<T> {
      * @param id the id of the entry to delete
      * @return returns true if deleted, else returns false
      */
-    boolean deleteById(int id);
+    boolean deleteByPrimaryKey(Object id) throws SQLSyntaxErrorException;
 }
 

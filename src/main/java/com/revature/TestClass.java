@@ -24,7 +24,7 @@ public class TestClass extends BaseModel<TestClass> {
     protected ColumnField[] setColumns() {
         ColumnField[] columns = new ColumnField[2];
         ColumnField column1 = new ColumnField("id", "serial", SQLConstraints.PRIMARY_KEY);
-        ColumnField column2 = new ColumnField("name", "varchar", SQLConstraints.NOT_NULL);
+        ColumnField column2 = new ColumnField("name", "varchar(25)", SQLConstraints.NOT_NULL);
         columns[0] = column1;
         columns[1] = column2;
         return columns;

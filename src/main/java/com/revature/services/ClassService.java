@@ -43,16 +43,35 @@ public class ClassService<T> {
 
         try {
             if (repo.findByPrimaryKey(pk) == null) {
-                System.out.println("The entry does not already exist, creating a new one.");
+                //System.out.println("The entry does not already exist, creating a new one.");
                 repo.saveNewToClassTable(save);
             } else {
-                System.out.println("Entry exists, updating it");
+                //System.out.println("Entry exists, updating it");
                 repo.updateByPrimaryKey(save);
             }
         } catch (SQLSyntaxErrorException throwables) {
             throwables.printStackTrace();
             return;
         }
+    }
+
+    public boolean delete(T delete) {
+        Object pk = getPrimaryKey(delete);
+
+        boolean deleted = false;
+
+        try {
+            if (repo.findByPrimaryKey(pk) == null) {
+                deleted = false;
+            } else {
+                //System.out.println("Entry exists, deleting it");
+                repo.deleteByPrimaryKey(pk);
+                deleted = true;
+            }
+        } catch (SQLSyntaxErrorException throwables) {
+            throwables.printStackTrace();
+        }
+        return deleted;
     }
 
     private Object getPrimaryKey(T instance) {
