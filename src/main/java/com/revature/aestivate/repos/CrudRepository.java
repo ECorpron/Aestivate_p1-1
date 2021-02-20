@@ -1,7 +1,6 @@
-package com.revature.repos;
+package com.revature.aestivate.repos;
 
 import java.sql.SQLException;
-import java.sql.SQLSyntaxErrorException;
 import java.util.ArrayList;
 
 /**

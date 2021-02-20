@@ -1,6 +1,4 @@
-package com.revature.factories;
-
-import com.revature.util.Database;
+package com.revature.aestivate.factories;
 
 import java.sql.Connection;
 import java.sql.SQLException;

@@ -1,6 +1,6 @@
-package com.revature.util;
+package com.revature.aestivate.util;
 
-import com.revature.model.SQLConstraints;
+import com.revature.aestivate.model.SQLConstraints;
 
 import java.util.Objects;
 

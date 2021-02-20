@@ -1,7 +1,7 @@
-package com.revature.model;
+package com.revature.aestivate.model;
 
-import com.revature.services.ClassService;
-import com.revature.util.ColumnField;
+import com.revature.aestivate.services.ClassService;
+import com.revature.aestivate.util.ColumnField;
 
 /**
  * Inheritance based model for an ORM

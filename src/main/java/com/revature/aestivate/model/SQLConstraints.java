@@ -1,4 +1,4 @@
-package com.revature.model;
+package com.revature.aestivate.model;
 
 /**
  * Enum that restricts the SQLConstraints people can use. Foreign Key and Default don't have functionality atm

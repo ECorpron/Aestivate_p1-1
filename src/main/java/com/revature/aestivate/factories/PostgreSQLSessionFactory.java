@@ -1,6 +1,6 @@
-package com.revature.factories;
+package com.revature.aestivate.factories;
 
-import com.revature.util.Database;
+import com.revature.aestivate.util.Database;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.sql.Connection;
