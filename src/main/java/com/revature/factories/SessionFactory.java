@@ -11,7 +11,10 @@ import java.sql.SQLException;
  */
 public interface SessionFactory {
 
-    //abstract SessionFactory(Configuration con);
-    public Connection getConnection() throws SQLException;
-    public String getDatabaseName();
+    /**
+     * A session factory needs to return a connection to a database
+     * @return returns a connection
+     * @throws SQLException throws an SQLException if there is an error with getting a connection to the database
+     */
+    Connection getConnection() throws SQLException;
 }

@@ -12,7 +12,6 @@ public class TestClass extends BaseModel<TestClass> {
     private String name;
 
     public TestClass(){
-
     }
 
     public TestClass(int id, String name) {

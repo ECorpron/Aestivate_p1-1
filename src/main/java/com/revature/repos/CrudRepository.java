@@ -1,12 +1,8 @@
 package com.revature.repos;
 
-import com.revature.model.BaseModel;
-import com.revature.model.SQLConstraints;
-
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
-import java.util.Map;
+import java.util.ArrayList;
 
 /**
  * Interface for implementing a CrudRepository. Requires classes that implement it to implement a number of methods that
@@ -20,7 +16,7 @@ public interface CrudRepository<T> {
      */
     boolean createClassTable() throws NoSuchFieldException, SQLException;
 
-    ResultSet getAll() throws SQLException;
+    ArrayList<T> getAll() throws SQLException;
 
     /**
      * A save method that saves a given object to the database.
@@ -39,7 +35,7 @@ public interface CrudRepository<T> {
      * @param primaryKey the key to search an entry for
      * @return returns the object with the corresponding id
      */
-    T findByPrimaryKey(Object primaryKey) throws NoSuchFieldException, SQLSyntaxErrorException;
+    T findByPrimaryKey(Object primaryKey) throws NoSuchFieldException, SQLException;
 
     /**
      * Updates the given object in the database.
@@ -53,6 +49,6 @@ public interface CrudRepository<T> {
      * @param id the id of the entry to delete
      * @return returns true if deleted, else returns false
      */
-    boolean deleteByPrimaryKey(Object id) throws SQLSyntaxErrorException;
+    boolean deleteByPrimaryKey(Object id) throws SQLException, NoSuchFieldException;
 }
 

@@ -1,6 +1,5 @@
 package com.revature.services;
 
-import com.revature.model.BaseModel;
 import com.revature.repos.GenericClassRepository;
 
 import java.lang.reflect.Field;
@@ -12,8 +11,12 @@ public class ClassService<T> {
     GenericClassRepository<T> repo;
     Class<T> tClass;
 
-    public ClassService(GenericClassRepository<T> repo, Class<T> tClass) {
-        this.repo = repo;
+    /**
+     * Creates a class service bassed on the class passed to it
+     * @param tClass
+     */
+    public ClassService(Class<T> tClass) {
+        this.repo = new GenericClassRepository<T>(tClass);
         this.tClass = tClass;
     }
 
@@ -55,6 +58,11 @@ public class ClassService<T> {
         }
     }
 
+    /**
+     * Deletes the given object from the class table. Returns true if an item was deleted, false if nothing was deleted.
+     * @param delete The object to delete
+     * @return returns true if something was deleted, false otherwise
+     */
     public boolean delete(T delete) {
         Object pk = getPrimaryKey(delete);
 
@@ -74,6 +82,11 @@ public class ClassService<T> {
         return deleted;
     }
 
+    /**
+     * A helper method to get the primary key from an object
+     * @param instance the object to get a primary key from
+     * @return returns the primary key object
+     */
     private Object getPrimaryKey(T instance) {
         Field pk = null;
         try {
@@ -81,6 +94,7 @@ public class ClassService<T> {
         } catch (NoSuchFieldException e) {
             System.out.println("Class is missing a column labeled as a primary key");
             e.printStackTrace();
+            System.exit(1);
         }
 
         if (Modifier.isPrivate(pk.getModifiers())) {

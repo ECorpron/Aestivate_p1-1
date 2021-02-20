@@ -1,10 +1,7 @@
 package com.revature.model;
 
-import com.revature.repos.GenericClassRepository;
 import com.revature.services.ClassService;
 import com.revature.util.ColumnField;
-
-import java.sql.SQLException;
 
 /**
  * Inheritance based model for an ORM
@@ -12,24 +9,36 @@ import java.sql.SQLException;
  */
 public abstract class BaseModel<T> {
 
+    // Base model stores a column field that keeps tracks of the columns for a class database, and the specific class
+    // service
     public static ColumnField[] columns;
     private ClassService<T> service;
-    //private T selfReference;
 
+    /**
+     * A constructor that is guaranteed to run for any class that extends base model. Creates a service of type t, and
+     * instantiates columns with setColumns(), which is required to be implemented by the class.
+     */
     @SuppressWarnings("unchecked")
-    public BaseModel() {
+    public BaseModel(){
         Class<T> tClass = (Class<T>) this.getClass();
-        service = new ClassService<T>(new GenericClassRepository<T>(tClass), tClass);
+        //tClass.getDeclaredConstructor();
+
+        service = new ClassService<T>(tClass);
         columns = setColumns();
-        //selfReference = this;
     }
 
+    /**
+     * Declares how the columns are instantiated.
+     * While not enforced here, code will break later on if none, or more than 1 columnfields are declared as a primary
+     * key.
+     * @return returns a ColumnField[] that describes the columns to be created in a database.
+     */
     protected abstract ColumnField[] setColumns();
 
     /**
      * Creates a table of the class only if the table doesn't already exists.
      */
-    public void createTableIfNonexistant() throws SQLException, NoSuchFieldException {
+    public void createTableIfNonexistant(){
         service.createClassTableIfDoesNotExist();
     }
 
@@ -44,10 +53,17 @@ public abstract class BaseModel<T> {
      * Creates a new row in the database if the object doesn't exist yet, or updates an already existing row if an
      * entry with the same primary key already exists.
      */
+    @SuppressWarnings("unchecked")
     public void save() {
         service.save((T) this);
     }
 
+    /**
+     * Deletes the current object instance from the database if it exists. Returns true if the object was there and
+     * deleted, returns false if no object was deleted
+     * @return returns true if an object was deleted, false if there was no object to delete.
+     */
+    @SuppressWarnings("unchecked")
     public boolean delete() {
         return service.delete((T) this);
     }
