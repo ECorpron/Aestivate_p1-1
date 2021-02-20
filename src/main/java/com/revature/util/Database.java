@@ -14,17 +14,21 @@ public class Database {
     private int maxIdle;
     private int maxOpenPreparedStatements;
 
+    /**
+     * Default constructor for the database, sets default values.
+     */
     public Database(){
         this.sqlDatabase = null;
         this.url = null;
         this.loginName = null;
         this.password = null;
-//        minIdle = -1;
-//        maxIdle = -1;
-//        maxOpenPreparedStatements = -1;
-
     }
 
+    /**
+     * Validates if entries to a database are valid.
+     * @param database A database to validate
+     * @return returns true if the database fields are valid, false if it is not
+     */
     public static boolean validate(Database database) {
         return ((database.getSqlDatabase() == null || database.getSqlDatabase().trim().equals("")) ||
                 (database.getUrl() == null || database.getUrl().trim().equals("")) ||

@@ -25,6 +25,10 @@ public class SessionManager {
 
     private static SessionFactory connections;
 
+    /**
+     * Parses the xml file for database information, then uses that to create a database session
+     * @throws XMLParseException
+     */
     private SessionManager() throws XMLParseException {
         Database db = XMLReader.getDatabaseSet();
         String dbName = db.getSqlDatabase();
@@ -42,7 +46,6 @@ public class SessionManager {
      */
     public static Connection getConnection() {
         try {
-            //System.out.println("got in get connection");
             return connections.getConnection();
         } catch (SQLException throwables) {
             System.out.println("Couldn't make connection to database");

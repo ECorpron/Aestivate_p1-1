@@ -6,6 +6,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.sql.SQLSyntaxErrorException;
 
+/**
+ * Handles the logic call to the class repo. Shouldn't make any calls to the database itself.
+ * @param <T>
+ */
 public class ClassService<T> {
 
     GenericClassRepository<T> repo;
@@ -13,10 +17,10 @@ public class ClassService<T> {
 
     /**
      * Creates a class service bassed on the class passed to it
-     * @param tClass
+     * @param tClass the class the service is created for
      */
     public ClassService(Class<T> tClass) {
-        this.repo = new GenericClassRepository<T>(tClass);
+        this.repo = new GenericClassRepository<>(tClass);
         this.tClass = tClass;
     }
 
@@ -54,7 +58,7 @@ public class ClassService<T> {
             }
         } catch (SQLSyntaxErrorException throwables) {
             throwables.printStackTrace();
-            return;
+            System.exit(1);
         }
     }
 
@@ -69,10 +73,7 @@ public class ClassService<T> {
         boolean deleted = false;
 
         try {
-            if (repo.findByPrimaryKey(pk) == null) {
-                deleted = false;
-            } else {
-                //System.out.println("Entry exists, deleting it");
+            if (repo.findByPrimaryKey(pk) != null) {
                 repo.deleteByPrimaryKey(pk);
                 deleted = true;
             }
