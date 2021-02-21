@@ -66,6 +66,10 @@ public abstract class BaseModel<T> {
         service.save((T) this);
     }
 
+    /**
+     * Checks the database by primary key if the object is already saved. Returns true if found, false otherwise.
+     * @return returns true if the object is found, false otherwise
+     */
     @SuppressWarnings("unchecked")
     public boolean exists() {
         return service.isInstanceSaved((T) this);
