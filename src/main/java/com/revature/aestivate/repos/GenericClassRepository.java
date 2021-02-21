@@ -567,4 +567,15 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
         }
         return builder;
     }
+
+    private String getTableName() {
+        try {
+            Field tableName = tClass.getDeclaredField("tableName");
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        return null;
+    }
 }

@@ -13,6 +13,7 @@ public abstract class BaseModel<T> {
     // service
     public static ColumnField[] columns;
     private ClassService<T> service;
+    public static String tableName;
 
     /**
      * A constructor that is guaranteed to run for any class that extends base model. Creates a service of type t, and
@@ -25,6 +26,7 @@ public abstract class BaseModel<T> {
 
         service = new ClassService<T>(tClass);
         columns = setColumns();
+        tableName = setTableName();
     }
 
     /**
@@ -34,6 +36,12 @@ public abstract class BaseModel<T> {
      * @return returns a ColumnField[] that describes the columns to be created in a database.
      */
     protected abstract ColumnField[] setColumns();
+
+    /**
+     * Declares the name of the table. Can be set to return null if the user doesn't care what the name is.
+     * @return table name to use
+     */
+    protected abstract String setTableName();
 
     /**
      * Creates a table of the class only if the table doesn't already exists.
