@@ -192,7 +192,7 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
             System.exit(1);
         } catch (SQLException e) {
             System.out.println("Class is already saved");
-            System.exit(1);
+            //System.exit(1);
         }
     }
 
@@ -325,14 +325,20 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
      * @return returns a string that is the Insert string
      */
     private String getInsertString() {
-        StringBuilder builder = new StringBuilder("INSERT INTO "+classTableName+"\n VALUES (");
+        StringBuilder insertBuilder = new StringBuilder("INSERT INTO "+classTableName +"(");
+        StringBuilder valuesBuilder = new StringBuilder(" VALUES (");
 
         try {
             Field field = tClass.getField("columns");
             ColumnField[] columns = (ColumnField[]) field.get(null);
 
             for (ColumnField column : columns) {
-                builder.append("?, ");
+                if ((column.getConstraint() == SQLConstraints.PRIMARY_KEY) &&
+                        column.getColumnType().equalsIgnoreCase("serial")) {
+                    continue;
+                }
+                insertBuilder.append(column.getColumnName()).append(", ");
+                valuesBuilder.append("?, ");
             }
 
         } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -340,10 +346,17 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
             System.exit(1);
         }
 
-        int index = builder.lastIndexOf(", ");
-        builder.delete(index, index+2);
-        builder.append(")");
-        return builder.toString();
+        int index = valuesBuilder.lastIndexOf(", ");
+        valuesBuilder.delete(index, index+2);
+
+        index = insertBuilder.lastIndexOf(", ");
+        insertBuilder.delete(index, index+2);
+
+        valuesBuilder.append(")");
+        insertBuilder.append(")");
+
+        insertBuilder.append(valuesBuilder);
+        return insertBuilder.toString();
     }
 
     /**
