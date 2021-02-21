@@ -19,9 +19,8 @@ import java.util.regex.Pattern;
  */
 public class GenericClassRepository<T> implements CrudRepository<T> {
 
-    Class<T> tClass;
-    String classTableName;
-    String select = "SELECT ? "+
+    private Class<T> tClass;
+    private String select = "SELECT ? "+
                     "FROM ?";
 
     /**
@@ -30,7 +29,6 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
      */
     public GenericClassRepository(Class<T> tClass) {
         this.tClass = tClass;
-        classTableName = getTableName();
     }
 
     /**
@@ -61,7 +59,7 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
             System.exit(1);
         }
 
-        StringBuilder builder = new StringBuilder("CREATE TABLE "+classTableName+" (\n");
+        StringBuilder builder = new StringBuilder("CREATE TABLE "+getTableName()+" (\n");
 
         assert columns != null;
         for (ColumnField column : columns) {
@@ -78,6 +76,7 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
             assert conn != null;
             PreparedStatement pstmt = conn.prepareStatement(builder.toString());
             pstmt.execute();
+            //System.out.println(pstmt.toString());
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             System.exit(1);
@@ -104,7 +103,7 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
             assert conn != null;
             PreparedStatement pstmt = conn.prepareStatement(select);
             pstmt.setString(1, "*");
-            pstmt.setString(2, classTableName);
+            pstmt.setString(2, getTableName());
 
             ResultSet table = pstmt.executeQuery();
 
@@ -130,7 +129,7 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
     public void dropClassTableAlways(){
         Connection conn = SessionManager.getConnection();
 
-        String sql = "DROP TABLE IF EXISTS "+classTableName;
+        String sql = "DROP TABLE IF EXISTS "+getTableName();
 
         try {
             assert conn != null;
@@ -246,7 +245,7 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
      * @throws SQLSyntaxErrorException throws the exception if a column field in the class has invalid characters
      */
     private String getUpdateString() throws SQLSyntaxErrorException {
-        StringBuilder builder = new StringBuilder("Update "+classTableName+" SET ");
+        StringBuilder builder = new StringBuilder("Update "+getTableName()+" SET ");
         StringBuilder qualifier = new StringBuilder("WHERE ");
 
         ColumnField[] columns = getColumns();
@@ -322,7 +321,7 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
      * @return returns a string that is the Insert string
      */
     private String getInsertString(T newObj) {
-        StringBuilder insertBuilder = new StringBuilder("INSERT INTO "+classTableName +"(");
+        StringBuilder insertBuilder = new StringBuilder("INSERT INTO "+getTableName() +"(");
         StringBuilder valuesBuilder = new StringBuilder(" VALUES (");
 
         try {
@@ -374,7 +373,7 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
 
         if (!isColumnNameSafe(pk.getName())) throw new SQLSyntaxErrorException("Name contains invalid characters");
 
-        String sql = "SELECT * FROM "+classTableName+" WHERE "+pk.getName()+" = ?";
+        String sql = "SELECT * FROM "+getTableName()+" WHERE "+pk.getName()+" = ?";
 
         Connection conn = SessionManager.getConnection();
 
@@ -415,7 +414,7 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
         }
 
         if (!isColumnNameSafe(pk.getName())) throw new SQLSyntaxErrorException("Name contains invalid characters");
-        String sql = "DELETE FROM "+classTableName+" WHERE "+pk.getName()+" = ?";
+        String sql = "DELETE FROM "+getTableName()+" WHERE "+pk.getName()+" = ?";
 
         Connection conn = SessionManager.getConnection();
 
@@ -572,7 +571,7 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
         String name = null;
 
         try {
-            Field tableName = tClass.getDeclaredField("tableName");
+            Field tableName = tClass.getField("tableName");
 
             if (Modifier.isPrivate(tableName.getModifiers())) {
                 tableName.setAccessible(true);
