@@ -180,7 +180,6 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
                 if (fieldToStore.getType().isEnum()) {
                     Enum enumType = (Enum) fieldToStore.get(newObj);
                     int store = enumType.ordinal()+1;
-                    //int enumVal = (int) store;
                     pstmt.setInt(count, store);
                 } else {
                     pstmt.setObject(count, fieldToStore.get(newObj));
@@ -313,7 +312,12 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
                 if (column.getConstraint() == SQLConstraints.PRIMARY_KEY) {
                     pstmt.setObject(columns.length, insert);
                 } else {
-                    pstmt.setObject(count, insert);
+                    if (insert.getClass().isEnum()) {
+                        int store = ((Enum) insert).ordinal()+1;
+                        pstmt.setInt(count, store);
+                    } else {
+                        pstmt.setObject(count, insert);
+                    }
                     count++;
                 }
             } catch (SQLException throwables) {
