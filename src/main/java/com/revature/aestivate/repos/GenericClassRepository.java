@@ -152,7 +152,6 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
     @Override
     public void saveNewToClassTable(T newObj) {
         String sql = getInsertString(newObj);
-        boolean saved = false;
 
         try {
             Field field = tClass.getField("columns");
@@ -180,8 +179,7 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
                 count++;
             }
 
-            saved = pstmt.execute();
-
+            pstmt.execute();
             conn.close();
 
         } catch (NoSuchFieldException | IllegalAccessException | SQLException e) {
@@ -420,9 +418,11 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
             }
 
             ResultSet rs = stmt.executeQuery();
+            ArrayList<T> found = getTObjects(rs);
             conn.close();
 
-            return getTObjects(rs);
+            return found;
+
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             System.exit(1);
