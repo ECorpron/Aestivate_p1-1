@@ -159,7 +159,7 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
      */
     @Override
     public void saveNewToClassTable(T newObj) {
-        String sql = getInsertString();
+        String sql = getInsertString(newObj);
 
         try {
             Field field = tClass.getField("columns");
@@ -324,7 +324,7 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
      * Helper method that creates the insert string
      * @return returns a string that is the Insert string
      */
-    private String getInsertString() {
+    private String getInsertString(T newObj) {
         StringBuilder insertBuilder = new StringBuilder("INSERT INTO "+classTableName +"(");
         StringBuilder valuesBuilder = new StringBuilder(" VALUES (");
 
@@ -335,7 +335,16 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
             for (ColumnField column : columns) {
                 if ((column.getConstraint() == SQLConstraints.PRIMARY_KEY) &&
                         column.getColumnType().equalsIgnoreCase("serial")) {
-                    continue;
+
+                    Field pk = tClass.getDeclaredField(column.getColumnName());
+
+                    if (Modifier.isPrivate(pk.getModifiers())) {
+                        pk.setAccessible(true);
+                    }
+
+                    if (pk.get(newObj) == null) {
+                        continue;
+                    }
                 }
                 insertBuilder.append(column.getColumnName()).append(", ");
                 valuesBuilder.append("?, ");
