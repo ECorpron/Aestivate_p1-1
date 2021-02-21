@@ -3,6 +3,8 @@ package com.revature.aestivate.model;
 import com.revature.aestivate.services.ClassService;
 import com.revature.aestivate.util.ColumnField;
 
+import java.util.Map;
+
 /**
  * Inheritance based model for an ORM
  * @param <T> the type of the class
@@ -64,6 +66,10 @@ public abstract class BaseModel<T> {
     @SuppressWarnings("unchecked")
     public void save() {
         service.save((T) this);
+    }
+
+    public T find(Map<String, Object> fields) {
+        return service.find(fields);
     }
 
     /**

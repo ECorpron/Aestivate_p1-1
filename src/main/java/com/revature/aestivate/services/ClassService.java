@@ -5,6 +5,8 @@ import com.revature.aestivate.repos.GenericClassRepository;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.sql.SQLSyntaxErrorException;
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Handles the logic call to the class repo. Shouldn't make any calls to the database itself.
@@ -97,6 +99,21 @@ public class ClassService<T> {
             System.exit(1);
         }
         return false;
+    }
+
+    public T find(Map<String, Object> fields) {
+//        ArrayList<Field> searchby = new ArrayList<>();
+//
+//        for (String fieldName : fields) {
+//            try {
+//                Field field = tClass.getDeclaredField(fieldName);
+//            } catch (NoSuchFieldException e) {
+//                e.printStackTrace();
+//                System.exit(1);
+//            }
+//        }
+
+
     }
 
     /**

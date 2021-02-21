@@ -10,6 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -395,6 +396,37 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
             System.exit(1);
         }
         return null;
+    }
+
+    public ArrayList<T> searchSpecificField(Map<String, Object> qualifiers) {
+        StringBuilder sql = new StringBuilder("SELECT * FROM "+getTableName()+" WHERE ");
+
+        Connection conn = SessionManager.getConnection();
+
+        for (Map.Entry<String, Object> entry : qualifiers.entrySet()) {
+            sql.append(entry.getKey()).append( " = ? AND ");
+        }
+
+        int index = sql.lastIndexOf(" AND ");
+        sql.delete(index, index+5);
+
+        try {
+            PreparedStatement stmt= conn.prepareStatement(sql.toString());
+
+            int counter = 1;
+            for (Map.Entry<String, Object> entry : qualifiers.entrySet()) {
+                stmt.setObject(counter, entry.getValue());
+                counter++;
+            }
+
+            ResultSet rs = stmt.executeQuery();
+            conn.close();
+
+            return getTObjects(rs);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            System.exit(1);
+        }
     }
 
     /**
