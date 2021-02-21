@@ -66,6 +66,11 @@ public abstract class BaseModel<T> {
         service.save((T) this);
     }
 
+    @SuppressWarnings("unchecked")
+    public boolean exists() {
+        return service.isInstanceSaved((T) this);
+    }
+
     /**
      * Deletes the current object instance from the database if it exists. Returns true if the object was there and
      * deleted, returns false if no object was deleted

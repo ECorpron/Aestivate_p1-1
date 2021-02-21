@@ -72,7 +72,7 @@ public class ClassService<T> {
         boolean deleted = false;
 
         try {
-            if (repo.findByPrimaryKey(pk) != null) {
+            if (isInstanceSaved(delete)) {
                 repo.deleteByPrimaryKey(pk);
                 deleted = true;
             }
@@ -80,6 +80,23 @@ public class ClassService<T> {
             throwables.printStackTrace();
         }
         return deleted;
+    }
+
+    /**
+     * Searches the database for the object by its primary key, returns true if it finds it, false otherwise
+     * @param search the object to search for
+     * @return returns true if the object is found, false otherwise
+     */
+    public boolean isInstanceSaved(T search) {
+        Object pk = getPrimaryKey(search);
+
+        try {
+            return (repo.findByPrimaryKey(pk) != null);
+        } catch (SQLSyntaxErrorException throwables) {
+            throwables.printStackTrace();
+            System.exit(1);
+        }
+        return false;
     }
 
     /**
@@ -105,6 +122,7 @@ public class ClassService<T> {
             return pk.get(instance);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
+            System.exit(1);
         }
         return null;
     }
