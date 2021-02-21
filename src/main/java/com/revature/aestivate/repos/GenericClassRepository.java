@@ -30,7 +30,7 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
      */
     public GenericClassRepository(Class<T> tClass) {
         this.tClass = tClass;
-        classTableName = replacePeriods(new StringBuilder(tClass.getName())).toString();
+        classTableName = getTableName();
     }
 
     /**
@@ -569,13 +569,31 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
     }
 
     private String getTableName() {
+        String name = null;
+
         try {
             Field tableName = tClass.getDeclaredField("tableName");
-        } catch (NoSuchFieldException e) {
+
+            if (Modifier.isPrivate(tableName.getModifiers())) {
+                tableName.setAccessible(true);
+            }
+            name = (String) tableName.get(null);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
             System.exit(1);
         }
 
-        return null;
+        if (name == null) {
+            name = replacePeriods(new StringBuilder(tClass.getName())).toString();
+        }
+
+        if (!isColumnNameSafe(name)) try {
+            throw new SQLSyntaxErrorException();
+        } catch (SQLSyntaxErrorException throwables) {
+            throwables.printStackTrace();
+            System.exit(1);
+        }
+
+        return name;
     }
 }
