@@ -8,8 +8,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -175,7 +177,15 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
                     continue;
                 }
 
-                pstmt.setObject(count, fieldToStore.get(newObj));
+                if (fieldToStore.getType().isEnum()) {
+                    Enum enumType = (Enum) fieldToStore.get(newObj);
+                    int store = enumType.ordinal()+1;
+                    //int enumVal = (int) store;
+                    pstmt.setInt(count, store);
+                } else {
+                    pstmt.setObject(count, fieldToStore.get(newObj));
+                }
+
                 count++;
             }
 
@@ -507,9 +517,9 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
                 emptyCon.setAccessible(true);
             }
 
-            T t = null;
+            T emptyObject = null;
             try {
-                t = emptyCon.newInstance();
+                emptyObject = emptyCon.newInstance();
             } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
                 e.printStackTrace();
                 System.exit(1);
@@ -518,9 +528,8 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
             for (int i = 1; i <= columns.length; i++) {
                 //System.out.println("On iteration: "+i);
                 Field field = null;
-                String columnName = null;
 
-                columnName = columns[i-1].getColumnName();
+                String columnName = columns[i-1].getColumnName();
 
                 try {
                     field = tClass.getDeclaredField(columnName);
@@ -535,14 +544,30 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
                 }
 
                 try {
-                    field.set(t, rs.getObject(columnName));
+
+                    if (field.getType().isEnum()) {
+                        int constant = (int) rs.getObject(columnName) - 1;
+                        field.set(emptyObject, field.getType().getEnumConstants()[constant]);
+                    }
+                    else {
+                        Object insert = rs.getObject(columnName);
+                        if (insert.getClass().equals(BigDecimal.class)) {
+                            if (field.getType().getName().equals(Double.class.getName()) ||
+                                    field.getType().getName().equals(double.class.getName())) {
+                                field.set(emptyObject, ((BigDecimal) insert).doubleValue());
+                            }
+                        }
+                        else {
+                            field.set(emptyObject, rs.getObject(columnName));
+                        }
+                    }
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                     System.exit(1);
                 }
             }
 
-            objects.add(t);
+            objects.add(emptyObject);
         }
 
         return objects;
