@@ -35,10 +35,9 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
 
     /**
      * Creates the class table. Returns true if the table is successfully made, or false if the table already exists.
-     * @return true if the table is made, false if the table already exists
      */
     @Override
-    public boolean createClassTable() {
+    public void createClassTable() {
 
         Field field = null;
         try {
@@ -58,7 +57,6 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
 
             columns = (ColumnField[]) field.get(null);
         } catch (IllegalAccessException e) {
-            System.out.println("Illegal Access exception to the columns field in the class");
             e.printStackTrace();
             System.exit(1);
         }
@@ -76,16 +74,13 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
 
         Connection conn = SessionManager.getConnection();
 
-        boolean created;
-
         try {
             assert conn != null;
             PreparedStatement pstmt = conn.prepareStatement(builder.toString());
             pstmt.execute();
-            created =  true;
         } catch (SQLException throwables) {
-            System.out.println("Class already exists!");
-            created = false;
+            throwables.printStackTrace();
+            System.exit(1);
         }
 
         try {
@@ -94,8 +89,6 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
             throwables.printStackTrace();
             System.exit(1);
         }
-
-        return created;
     }
 
     /**
@@ -138,7 +131,6 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
         Connection conn = SessionManager.getConnection();
 
         String sql = "DROP TABLE IF EXISTS "+classTableName;
-        //System.out.println(sql);
 
         try {
             assert conn != null;
@@ -154,12 +146,13 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
     }
 
     /**
-     * Takes in aobject of type t to save in the t Class table. Adds a new entry to the table.
+     * Takes in an object of type t to save in the t Class table. Adds a new entry to the table.
      * @param newObj the object to be saved
      */
     @Override
     public void saveNewToClassTable(T newObj) {
         String sql = getInsertString(newObj);
+        boolean saved = false;
 
         try {
             Field field = tClass.getField("columns");
@@ -179,20 +172,21 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
                     fieldToStore.setAccessible(true);
                 }
 
+                if (column.getColumnType().equalsIgnoreCase("serial")) {
+                    continue;
+                }
+
                 pstmt.setObject(count, fieldToStore.get(newObj));
                 count++;
             }
 
-            pstmt.execute();
+            saved = pstmt.execute();
 
             conn.close();
 
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+        } catch (NoSuchFieldException | IllegalAccessException | SQLException e) {
             e.printStackTrace();
             System.exit(1);
-        } catch (SQLException e) {
-            System.out.println("Class is already saved");
-            //System.exit(1);
         }
     }
 
@@ -265,6 +259,9 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
             if (column.getConstraint() == SQLConstraints.PRIMARY_KEY) {
                 qualifier.append(columnName).append(" = ?");
             } else {
+                if (column.getColumnType().equalsIgnoreCase("serial")) {
+                    continue;
+                }
                 builder.append(columnName).append(" = ?, ");
             }
         }
@@ -333,18 +330,9 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
             ColumnField[] columns = (ColumnField[]) field.get(null);
 
             for (ColumnField column : columns) {
-                if ((column.getConstraint() == SQLConstraints.PRIMARY_KEY) &&
-                        column.getColumnType().equalsIgnoreCase("serial")) {
 
-                    Field pk = tClass.getDeclaredField(column.getColumnName());
-
-                    if (Modifier.isPrivate(pk.getModifiers())) {
-                        pk.setAccessible(true);
-                    }
-
-                    if (pk.get(newObj) == null) {
-                        continue;
-                    }
+                if (column.getColumnType().equalsIgnoreCase("serial")) {
+                    continue;
                 }
                 insertBuilder.append(column.getColumnName()).append(", ");
                 valuesBuilder.append("?, ");

@@ -26,10 +26,9 @@ public class ClassService<T> {
 
     /**
      * Creates a class table if it does not already exist. Otherwise returns false.
-     * @return returns true if a new table is made, false is one is not made.
      */
-    public boolean createClassTableIfDoesNotExist(){
-        return repo.createClassTable();
+    public void createClassTableIfDoesNotExist(){
+        repo.createClassTable();
     }
 
     /**

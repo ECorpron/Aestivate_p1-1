@@ -13,7 +13,7 @@ public interface CrudRepository<T> {
     /**
      * Creates a table of the specified object
      */
-    boolean createClassTable() throws NoSuchFieldException, SQLException;
+    void createClassTable() throws NoSuchFieldException, SQLException;
 
     ArrayList<T> getAll() throws SQLException;
 
