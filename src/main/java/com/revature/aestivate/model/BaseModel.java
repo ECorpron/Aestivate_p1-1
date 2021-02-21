@@ -3,6 +3,7 @@ package com.revature.aestivate.model;
 import com.revature.aestivate.services.ClassService;
 import com.revature.aestivate.util.ColumnField;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -68,7 +69,7 @@ public abstract class BaseModel<T> {
         service.save((T) this);
     }
 
-    public T find(Map<String, Object> fields) {
+    public ArrayList<T> find(Map<String, Object> fields) {
         return service.find(fields);
     }
 

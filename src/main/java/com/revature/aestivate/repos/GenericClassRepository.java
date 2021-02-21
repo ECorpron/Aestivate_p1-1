@@ -398,7 +398,7 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
         return null;
     }
 
-    public ArrayList<T> searchSpecificField(Map<String, Object> qualifiers) {
+    public ArrayList<T> searchByFields(Map<String, Object> qualifiers) {
         StringBuilder sql = new StringBuilder("SELECT * FROM "+getTableName()+" WHERE ");
 
         Connection conn = SessionManager.getConnection();
@@ -427,6 +427,8 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
             throwables.printStackTrace();
             System.exit(1);
         }
+
+        return null;
     }
 
     /**

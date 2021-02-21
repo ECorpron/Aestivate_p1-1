@@ -101,19 +101,8 @@ public class ClassService<T> {
         return false;
     }
 
-    public T find(Map<String, Object> fields) {
-//        ArrayList<Field> searchby = new ArrayList<>();
-//
-//        for (String fieldName : fields) {
-//            try {
-//                Field field = tClass.getDeclaredField(fieldName);
-//            } catch (NoSuchFieldException e) {
-//                e.printStackTrace();
-//                System.exit(1);
-//            }
-//        }
-
-
+    public ArrayList<T> find(Map<String, Object> fields) {
+        return repo.searchByFields(fields);
     }
 
     /**
