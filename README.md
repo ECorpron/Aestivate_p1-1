@@ -74,14 +74,14 @@ up with the table's constraints.
 
 An example of the setColumns():
     @Override
-    protected ColumnField[] setColumns() {
-        ColumnField[] columns = new ColumnField[5];
-        columns[0] = new ColumnField("id", "serial", SQLConstraints.PRIMARY_KEY);
-        columns[1] = new ColumnField("username", "varchar", SQLConstraints.UNIQUE);
-        columns[2] = new ColumnField("password", "varchar", SQLConstraints.NOT_NULL);
-        columns[3] = new ColumnField("firstName", "varchar", SQLConstraints.NOT_NULL);
-        columns[4] = new ColumnField("lastName", "varchar", SQLConstraints.NOT_NULL);
-
+    protected ColumnField[] setColumns() {  
+        ColumnField[] columns = new ColumnField[5];  
+        columns[0] = new ColumnField("id", "serial", SQLConstraints.PRIMARY_KEY);  
+        columns[1] = new ColumnField("username", "varchar", SQLConstraints.UNIQUE);  
+        columns[2] = new ColumnField("password", "varchar", SQLConstraints.NOT_NULL);  
+        columns[3] = new ColumnField("firstName", "varchar", SQLConstraints.NOT_NULL);  
+        columns[4] = new ColumnField("lastName", "varchar", SQLConstraints.NOT_NULL);  
+  
         return columns;
     }
 -----------------------------------------------------------
