@@ -47,9 +47,9 @@ statements there can be. An Example of the xml file is provided here:
 --------------------------------------------------------
 The way to access the database is by extending the BaseModel. For Example, public class example extends BaseModel<example>{}
 
-This gives two abstract methods to fill out: setColumns and setTableName. setTableName is so that the class extending the model
-can be used with existing databases. Return a String that is the same as the table name you want to associate the class with. If
-you don't care about the name of the table, return null and the class will handle it for you.
+This gives two abstract methods to fill out: setColumns and setTableName. setTableName is so that the class extending the model  
+can be used with existing databases. Return a String that is the same as the table name you want to associate the class with. If  
+you don't care about the name of the table, return null and the class will handle it for you.  
 
 Example:
     @Override
@@ -62,15 +62,15 @@ OR
         return null;
     }
 
-The other, setColumns, is a little more involved. This is the method that is used to get information about the columns in
-the table, and the corresponding fields in the class. The return type is a ColumnField[]. A ColumnField holds a string
-column name, a string type, and an SQLConstraint, which is an enum type.
+The other, setColumns, is a little more involved. This is the method that is used to get information about the columns in  
+the table, and the corresponding fields in the class. The return type is a ColumnField[]. A ColumnField holds a string  
+column name, a string type, and an SQLConstraint, which is an enum type.  
 
-The array of columns should have at one Primary_Key constraint. There is not extensive testing, to it is unknown what
-happens if there are none or more than 1 given.
-Another limitation is that each column can only be given one constraint. For the most part this doesn't matter if the object
-is connecting to an already existing database, but it could have unforseen side effects if the column constraints don't line
-up with the table's constraints.
+The array of columns should have at one Primary_Key constraint. There is not extensive testing, to it is unknown what  
+happens if there are none or more than 1 given.  
+Another limitation is that each column can only be given one constraint. For the most part this doesn't matter if the object  
+is connecting to an already existing database, but it could have unforseen side effects if the column constraints don't line  
+up with the table's constraints.  
 
 An example of the setColumns():
     @Override
