@@ -73,6 +73,7 @@ is connecting to an already existing database, but it could have unforseen side 
 up with the table's constraints.  
 
 An example of the setColumns():
+~~~ java
     @Override
     protected ColumnField[] setColumns() {  
         ColumnField[] columns = new ColumnField[5];  
@@ -83,6 +84,7 @@ An example of the setColumns():
         columns[4] = new ColumnField("lastName", "varchar", SQLConstraints.NOT_NULL);  
         return columns;
     }
+~~~
 -----------------------------------------------------------
 Reminder, does not work if the Database name is different than "postgresql".
 
