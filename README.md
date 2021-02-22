@@ -27,15 +27,50 @@ statements there can be. An Example of the xml file is provided here:
 
 </Configuration>
 --------------------------------------------------------
+--------------------------------------------------------
+The way to access the database is by extending the BaseModel. For Example, public class example extends BaseModel<example>{}
 
+This gives two abstract methods to fill out: setColumns and setTableName. setTableName is so that the class extending the model
+can be used with existing databases. Return a String that is the same as the table name you want to associate the class with. If
+you don't care about the name of the table, return null and the class will handle it for you.
+
+Example:
+    @Override
+    protected String setTableName() {
+        return "app_users";
+    }
+OR
+    @Override
+    protected String setTableName() {
+        return null;
+    }
+
+The other, setColumns, is a little more involved. This is the method that is used to get information about the columns in
+the table, and the corresponding fields in the class. The return type is a ColumnField[]. A ColumnField holds a string
+column name, a string type, and an SQLConstraint, which is an enum type.
+
+The array of columns should have at one Primary_Key constraint. There is not extensive testing, to it is unknown what
+happens if there are none or more than 1 given.
+Another limitation is that each column can only be given one constraint. For the most part this doesn't matter if the object
+is connecting to an already existing database, but it could have unforseen side effects if the column constraints don't line
+up with the table's constraints.
+
+An example of the setColumns():
+    @Override
+    protected ColumnField[] setColumns() {
+        ColumnField[] columns = new ColumnField[5];
+        columns[0] = new ColumnField("id", "serial", SQLConstraints.PRIMARY_KEY);
+        columns[1] = new ColumnField("username", "varchar", SQLConstraints.UNIQUE);
+        columns[2] = new ColumnField("password", "varchar", SQLConstraints.NOT_NULL);
+        columns[3] = new ColumnField("firstName", "varchar", SQLConstraints.NOT_NULL);
+        columns[4] = new ColumnField("lastName", "varchar", SQLConstraints.NOT_NULL);
+
+        return columns;
+    }
+-----------------------------------------------------------
 Reminder, does not work if the Database name is different than "postgresql".
 
-The current features of Aestivate are that it manages connections to the database, and that it can
-create tables of a class that extends its base model, BaseModel.
-
-Future plans are to make the variable types of the allowed columns to be more robust, along with
-Saving the current instance of the object to the table, update an existing entry an instance,
-and deleting class instances from the class table.
+Future plans are to make the variable types of the allowed columns to be more robust, logging, and unit testing.
 
 Stretch goals are to implement foreign keys to connect classes, and even further down the line is
 the ability to connect to multiple databases at once.
