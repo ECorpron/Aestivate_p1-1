@@ -1,4 +1,4 @@
-## Aestivate_p1
+# Aestivate_p1
 
 Aestivate is a basic Java ORM that works through inheritance. It Currently works with
 just postgresql, but this may expand in the future.
@@ -6,7 +6,7 @@ just postgresql, but this may expand in the future.
 Currently Aestivate takes in an aestivate.xml to configure database connection.
 
 ---------------------
-# FUNCTIONALITY
+## FUNCTIONALITY
 Objects that extend the model class can:  
 Create a new table based on the child class  
 Drop then create a table of a child class  
@@ -18,7 +18,7 @@ Check if an entry exists of an object with then same primary key
 
 -------------------
 
-# SETUP
+## SETUP
 
 For Aestivate to work, it requires an aestivate.xml file in the resources directory.
 This file informs Aestivate of the database type it is connecting to (eg. postgresql),
@@ -27,6 +27,7 @@ connections to idle, the max number of connections to idle, and the max open pre
 statements there can be. An Example of the xml file is provided here:
 
 -----------------------------------------------
+~~~ xml
 <?xml version="1.0" encoding="UTF-8" ?>
 <Configuration>
 
@@ -41,6 +42,7 @@ statements there can be. An Example of the xml file is provided here:
     </Database>
 
 </Configuration>
+~~~
 --------------------------------------------------------
 --------------------------------------------------------
 The way to access the database is by extending the BaseModel. For Example, public class example extends BaseModel<example>{}
