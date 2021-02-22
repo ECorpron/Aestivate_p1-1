@@ -69,6 +69,13 @@ public abstract class BaseModel<T> {
         service.save((T) this);
     }
 
+    /**
+     * Finds all objects in the class database that matches given Qualifiers. The String should be the column name,
+     * the Object the value to be searched for.
+     * @param fields The values that should be looked for in the class database. The String is the column name, the
+     *               object the value to be searched for
+     * @return Returns an ArrayList of all matching entries
+     */
     public ArrayList<T> find(Map<String, Object> fields) {
         return service.find(fields);
     }

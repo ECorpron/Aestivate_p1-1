@@ -11,7 +11,6 @@ import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -153,7 +152,7 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
      */
     @Override
     public void saveNewToClassTable(T newObj) {
-        String sql = getInsertString(newObj);
+        String sql = getInsertString();
 
         try {
             Field field = tClass.getField("columns");
@@ -333,7 +332,7 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
      * Helper method that creates the insert string
      * @return returns a string that is the Insert string
      */
-    private String getInsertString(T newObj) {
+    private String getInsertString() {
         StringBuilder insertBuilder = new StringBuilder("INSERT INTO "+getTableName() +"(");
         StringBuilder valuesBuilder = new StringBuilder(" VALUES (");
 
@@ -410,6 +409,13 @@ public class GenericClassRepository<T> implements CrudRepository<T> {
         return null;
     }
 
+    /**
+     * Searches the database for entries that match the given qualifiers. The String in the map should be the column
+     * name, the object the value to be searching for
+     * @param qualifiers A map to be used in the "where" selection. The String is the column name, the object the value
+     *                   to be searched for
+     * @return returns an ArrayList<T> that contains all matching objects.
+     */
     public ArrayList<T> searchByFields(Map<String, Object> qualifiers) {
         StringBuilder sql = new StringBuilder("SELECT * FROM "+getTableName()+" WHERE ");
 

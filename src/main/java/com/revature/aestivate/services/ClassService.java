@@ -101,6 +101,11 @@ public class ClassService<T> {
         return false;
     }
 
+    /**
+     * Finds any object that match the given field.
+     * @param fields the fields to be searching for
+     * @return returns an arraylist of all matching entries
+     */
     public ArrayList<T> find(Map<String, Object> fields) {
         return repo.searchByFields(fields);
     }
