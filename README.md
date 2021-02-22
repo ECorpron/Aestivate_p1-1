@@ -81,7 +81,6 @@ An example of the setColumns():
         columns[2] = new ColumnField("password", "varchar", SQLConstraints.NOT_NULL);  
         columns[3] = new ColumnField("firstName", "varchar", SQLConstraints.NOT_NULL);  
         columns[4] = new ColumnField("lastName", "varchar", SQLConstraints.NOT_NULL);  
-  
         return columns;
     }
 -----------------------------------------------------------
