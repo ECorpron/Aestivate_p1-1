@@ -1,12 +1,20 @@
 # Aestivate_p1
 
+## Project Description
 Aestivate is a basic Java ORM that works through inheritance. It Currently works with
 just postgresql, but this may expand in the future.
 
 Currently Aestivate takes in an aestivate.xml to configure database connection.
 
+## Technologies Used
+* JDBC
+* Java
+* Git
+* Github
+* Reflection
+
 ---------------------
-## FUNCTIONALITY
+## Features
 Objects that extend the model class can:  
 * Create a new table based on the child class  
 * Drop then create a table of a child class  
