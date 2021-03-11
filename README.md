@@ -53,6 +53,7 @@ statements there can be. An Example of the xml file is provided here:
 ~~~
 --------------------------------------------------------
 --------------------------------------------------------
+## Usage
 The way to access the database is by extending the BaseModel. For Example, public class example extends BaseModel<example>{}
 
 This gives two abstract methods to fill out: setColumns and setTableName. setTableName is so that the class extending the model  
