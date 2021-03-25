@@ -1,4 +1,4 @@
-package com.revature.util;
+package com.parrwayTech.aestivate.util;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -15,16 +15,18 @@ import java.io.IOException;
 
 /**
  * Parses the Aestivate.xml file. As of right now, only checks for needed information to set up connections to a
- * postgresql database
+ * postgresql database. Uses an eager singleton design pattern to read file on class load to ensure the infroamtion is
+ * initially correct
  */
 public class XMLReader {
 
     private static XMLReader reader = new XMLReader();
     private static Database database;
 
+    /**
+     * Private constructor that checks for the aestivate xml file. If it fails, throws an error and crashes the program
+     */
     private XMLReader() {
-        //databaseSet = new HashSet<>();
-
         File inputFile = new File("src/main/resources/aestivate.xml");
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
@@ -38,18 +40,29 @@ public class XMLReader {
         } catch (ParserConfigurationException e) {
             System.out.println("Error in creating the builder");
             e.printStackTrace();
+            System.exit(1);
         } catch (SAXException e) {
             System.out.println("SAX exception found");
             e.printStackTrace();
+            System.exit(1);
         } catch (IOException e) {
             System.out.println("aestivate.xml file not found in resources");
             e.printStackTrace();
+            System.exit(1);
         } catch (XMLParseException e) {
             System.out.println("Missing elements or attributes from database configuration in XML file");
             e.printStackTrace();
+            System.exit(1);
         }
     }
 
+    /**
+     * Private method that actually parses the XML file. checks for needed tags, and throws an error if they are not
+     * found
+     * @param databaseNodes The xml node to check for information
+     * @return returns a database object to be used
+     * @throws XMLParseException thrown if there is an error in the xml file setup
+     */
     private static Database parseXML(NodeList databaseNodes) throws XMLParseException {
         if (databaseNodes.getLength() == 0) throw new XMLParseException("No Database tags found");
 
@@ -89,16 +102,23 @@ public class XMLReader {
                 throw new XMLParseException("Missing one or more elements or attributes from Database configuration" +
                         " in the XML file");
             }
-            //System.out.println(db.toString());
             return db;
         }
         return null;
     }
 
+    /**
+     * Getter method for the XMLReader
+     * @return returns the XMLReader
+     */
     public static XMLReader getInstance() {
         return reader;
     }
 
+    /**
+     * Getter method for the databse
+     * @return returns the database object made
+     */
     public static Database getDatabaseSet() {
         return database;
     }

@@ -1,10 +1,16 @@
-package com.revature.model;
+package com.parrwayTech.aestivate.model;
 
+/**
+ * Enum that restricts the SQLConstraints people can use. Foreign Key and Default don't have functionality atm
+ */
 public enum SQLConstraints {
     PRIMARY_KEY, FOREIGN_KEY, NOT_NULL, UNIQUE, CHECK, DEFAULT, INDEX;
 
-    //public String defaultValue = "";
-
+    /**
+     * A convenience method that converts an enum to its SQL string
+     * @param con the SQLConstraint to be converted
+     * @return a string version of the constraint
+     */
     public static String stringReprestation(SQLConstraints con) {
         switch (con) {
             case PRIMARY_KEY:
