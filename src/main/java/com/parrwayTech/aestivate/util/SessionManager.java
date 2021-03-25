@@ -1,7 +1,7 @@
-package com.revature.aestivate.util;
+package com.parrwayTech.aestivate.util;
 
-import com.revature.aestivate.factories.PostgreSQLSessionFactory;
-import com.revature.aestivate.factories.SessionFactory;
+import com.parrwayTech.aestivate.factories.PostgreSQLSessionFactory;
+import com.parrwayTech.aestivate.factories.SessionFactory;
 
 import javax.management.modelmbean.XMLParseException;
 import java.sql.Connection;

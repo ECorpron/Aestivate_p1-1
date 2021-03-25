@@ -1,6 +1,6 @@
-package com.revature.aestivate.services;
+package com.parrwayTech.aestivate.services;
 
-import com.revature.aestivate.repos.GenericClassRepository;
+import com.parrwayTech.aestivate.repos.GenericClassRepository;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

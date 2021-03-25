@@ -1,8 +1,8 @@
-package com.revature.aestivate.repos;
+package com.parrwayTech.aestivate.repos;
 
-import com.revature.aestivate.model.SQLConstraints;
-import com.revature.aestivate.util.ColumnField;
-import com.revature.aestivate.util.SessionManager;
+import com.parrwayTech.aestivate.model.SQLConstraints;
+import com.parrwayTech.aestivate.util.ColumnField;
+import com.parrwayTech.aestivate.util.SessionManager;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;

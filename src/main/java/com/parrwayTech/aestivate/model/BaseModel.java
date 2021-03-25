@@ -1,7 +1,7 @@
-package com.revature.aestivate.model;
+package com.parrwayTech.aestivate.model;
 
-import com.revature.aestivate.services.ClassService;
-import com.revature.aestivate.util.ColumnField;
+import com.parrwayTech.aestivate.services.ClassService;
+import com.parrwayTech.aestivate.util.ColumnField;
 
 import java.util.ArrayList;
 import java.util.Map;

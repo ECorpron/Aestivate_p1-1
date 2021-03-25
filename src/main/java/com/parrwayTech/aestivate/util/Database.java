@@ -1,4 +1,4 @@
-package com.revature.aestivate.util;
+package com.parrwayTech.aestivate.util;
 
 import java.util.Objects;
 
